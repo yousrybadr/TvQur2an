@@ -1,0 +1,63 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="@dimen/margin_20"
+    android:orientation="vertical"
+    android:padding="10dp" android:background="@color/colorWhite">
+
+
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Filter"
+        android:textColor="@color/colorBlack"
+        android:textSize="@dimen/largeTextSize"
+        android:textStyle="bold" />
+<RadioGroup
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/radioGB">
+    <RadioButton
+        android:id="@+id/rd_Random"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_20"
+        android:text="@string/Random" />
+
+    <RadioButton
+        android:id="@+id/rd_mostLiked"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rd_cam"
+        android:text="@string/mostLiked" />
+
+    <RadioButton
+        android:id="@+id/rd_Recent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Recent" />
+
+    <RadioButton
+        android:id="@+id/rd_mostListened"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/mostListened" />
+
+</RadioGroup>
+
+
+    <Button
+        android:id="@+id/bt_cancel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/margin_20"
+        android:gravity="center"
+        android:text="@string/Cancel"
+        android:textColor="@color/colorBlue"
+        android:textAllCaps="false"
+        android:textSize="@dimen/largeTextSize"
+        android:background="@color/colorWhite"/>
+
+</LinearLayout>

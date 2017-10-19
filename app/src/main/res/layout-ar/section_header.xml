@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="@dimen/padding_15"  >
+
+    <TextView
+        android:id="@+id/readingType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_weight="1"
+        android:gravity="start"
+        android:text="HOlyQr2an-warsh"
+        android:textSize="@dimen/mediumTextSize"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/numOfSorahSection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:drawableEnd="@drawable/arrowcircular_ar"
+        android:drawablePadding="@dimen/padding_15"
+        android:padding="@dimen/height_10"
+        android:text="102"
+       />
+</LinearLayout>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/connectionLayout"
+    >
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="@color/colorOrange"
+    android:orientation="horizontal" android:id="@+id/noConnectionLayout">
+
+    <TextView
+        android:id="@+id/connectionTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:text="@string/InternetConnectionDetected"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/mediumTextSize" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:text="@string/GoOnline"
+        android:textColor="@color/colorBlue"
+        android:textSize="@dimen/mediumTextSize"
+        android:visibility="gone"
+        android:id="@+id/txtGo_online"
+       android:layout_marginRight="10dp" />
+
+</LinearLayout>
+    <RelativeLayout
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" android:layout_below="@+id/noConnectionLayout">
+
+        <ImageView
+            android:id="@+id/img_connection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/emosad"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
+</RelativeLayout>

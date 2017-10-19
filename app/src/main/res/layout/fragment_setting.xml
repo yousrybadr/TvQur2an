@@ -1,0 +1,134 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.pentavalue.tvquran.ui.fragments.SettingFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+
+            android:padding="@dimen/padding_15">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="@dimen/height_10"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/mediumTextSize"
+                android:text="@string/AutoPlay" />
+
+            <ToggleButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/height_10"
+                android:textOn=""
+                android:textOff=""
+                android:id="@+id/toggle_autoPlay"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:background="@drawable/toggle_custom"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorAccent" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+
+            android:padding="@dimen/padding_15">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="@dimen/height_10"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/mediumTextSize"
+                android:text="@string/updateDateWithOnlyWifi" />
+
+            <ToggleButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/height_10"
+                android:textOn=""
+                android:textOff=""
+                android:id="@+id/toggle_update"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:background="@drawable/toggle_custom" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorAccent" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding_15"
+            android:id="@+id/clear_history_layout"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ClearSearchHistory"
+                android:layout_marginTop="@dimen/height_10"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/mediumTextSize"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ClearSearchMade"
+                android:layout_marginTop="@dimen/height_10"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/smallTextSize"
+                 />
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorAccent" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding_15"
+            android:orientation="vertical"
+            android:id="@+id/clear_download_history_layout">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ClearHistory"
+                android:textColor="@color/colorBlack"
+                android:layout_marginTop="@dimen/height_10"
+                android:textSize="@dimen/mediumTextSize"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ClearAcountHistoryFromAllDevices"
+                android:textColor="@color/colorBlack"
+                android:layout_marginTop="@dimen/height_10"
+                android:textSize="@dimen/smallTextSize"
+                 />
+        </LinearLayout>
+
+    </LinearLayout>
+</FrameLayout>

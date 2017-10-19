@@ -1,0 +1,43 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.pentavalue.tvquran.ui.fragments.SearchResultFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="@dimen/height_10"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/et_Search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/rounded_shape"
+            android:drawablePadding="@dimen/padding_10"
+            android:drawableStart="@drawable/search"
+            android:drawableEnd="@drawable/ic_close_black_18dp"
+            android:gravity="center"
+            android:inputType="text"
+            android:padding="@dimen/padding_15" />
+    </LinearLayout>
+    <!--<tellh.com.stickyheaderview_rv.StickyHeaderView
+        android:id="@+id/stickyHeaderView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp">
+-->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:scrollbars="vertical" />
+ <!--   </tellh.com.stickyheaderview_rv.StickyHeaderView>-->
+
+</LinearLayout>

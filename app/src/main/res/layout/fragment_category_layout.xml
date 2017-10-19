@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorOrange"
+        android:visibility="gone"
+        android:orientation="horizontal" android:id="@+id/noConnectionLayout">
+
+        <TextView
+            android:id="@+id/connectionTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/InternetConnectionDetected"
+            android:textColor="@color/colorWhite" android:gravity="start"
+            android:textSize="@dimen/mediumTextSize"
+           />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/GoOnline"
+            android:textColor="@color/colorBlue"
+            android:textSize="@dimen/mediumTextSize"
+            android:visibility="gone"
+            android:id="@+id/txtGo_online"
+            android:layout_marginRight="10dp" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/settingLayout"
+            android:layout_margin="@dimen/height_10"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:padding="@dimen/margin_15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/moresettingsicon" />
+
+            <TextView
+                android:layout_marginStart="@dimen/margin_15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/Settings"
+                android:textSize="@dimen/mediumTextSize"
+                android:textStyle="bold" />
+            <ImageView
+                android:padding="@dimen/margin_15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/back"
+               android:rotation="180" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_margin="@dimen/height_10"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:id="@+id/aboutLayout">
+
+            <ImageView
+                android:padding="@dimen/margin_15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/moreabouticon" />
+
+            <TextView
+                android:layout_marginStart="@dimen/margin_15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/About"
+                android:textSize="@dimen/mediumTextSize"
+                android:textStyle="bold" />
+            <ImageView
+                android:padding="@dimen/margin_15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/back"
+                android:rotation="180"   />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_margin="@dimen/height_10"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:id="@+id/termsOfUse">
+
+            <ImageView
+                android:padding="@dimen/margin_15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/moretermsicon"
+                />
+
+            <TextView
+                android:layout_marginStart="@dimen/margin_15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/TermsOfUse"
+                android:textSize="@dimen/mediumTextSize"
+                android:textStyle="bold" />
+            <ImageView
+                android:padding="@dimen/margin_15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/back"
+                android:rotation="180"  />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_margin="@dimen/height_10"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:id="@+id/contactUsLayout"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:padding="@dimen/margin_15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/moreconactusicon" />
+
+            <TextView
+                android:layout_marginStart="@dimen/margin_15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ContactUs"
+                android:textSize="@dimen/mediumTextSize"
+                android:textStyle="bold" />
+            <ImageView
+                android:padding="@dimen/margin_15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/back"
+                android:rotation="180"  />
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

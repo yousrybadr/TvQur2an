@@ -1,0 +1,260 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite"
+    tools:context="com.pentavalue.tvquran.ui.fragments.DiscoverFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <include
+        android:id="@+id/connectionLayout"
+        layout="@layout/top_layout_connection"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="@dimen/height_10"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="@dimen/height_10"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/et_Search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/rounded_shape"
+                android:drawableEnd="@drawable/ic_close_black_18dp"
+                android:drawablePadding="@dimen/padding_10"
+                android:drawableStart="@drawable/search"
+                android:gravity="center"
+                android:hint="@string/SearchForPeapleAndSearch"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:padding="@dimen/padding_15" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/height_10"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/searchLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="@dimen/height_10"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:id="@+id/HolyQuraanLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/colorApp"
+                android:gravity="center"
+                android:padding="@dimen/margin_20">
+
+
+                <TextView
+                    android:id="@+id/HolyQuraan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorApp"
+                    android:drawablePadding="@dimen/height_10"
+                    android:drawableStart="@drawable/discovermoshafsmall"
+                    android:text="@string/HolyQr2an" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/padding_15"
+                android:weightSum="3">
+
+
+                <TextView
+                    android:id="@+id/BeautifulQuraan"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@color/colorApp"
+                    android:drawablePadding="@dimen/padding_15"
+                    android:drawableTop="@drawable/discovermoshafbig"
+                    android:gravity="center"
+                    android:padding="@dimen/padding_10"
+                    android:text="@string/BeautifulQuranRecitation"
+                    android:textSize="10sp" />
+
+                <TextView
+                    android:id="@+id/RecitationByChildren"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/height_10"
+                    android:layout_weight="1"
+                    android:background="@color/colorApp"
+                    android:drawablePadding="@dimen/padding_15"
+                    android:drawableTop="@drawable/discovermoshafbig"
+                    android:gravity="center"
+                    android:padding="@dimen/padding_10"
+                    android:text="@string/RecitationByChildren"
+
+                    android:textSize="10sp" />
+
+                <TextView
+                    android:id="@+id/Requa"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/height_10"
+                    android:layout_weight="1"
+                    android:background="@color/colorApp"
+                    android:drawablePadding="@dimen/padding_15"
+                    android:drawableTop="@drawable/discovermoshafbig"
+                    android:gravity="center"
+                    android:padding="@dimen/padding_10"
+                    android:text="@string/Ruqyah"
+                    android:textSize="10sp"
+
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/height_10"
+                android:weightSum="3">
+
+                <TextView
+                    android:id="@+id/DailyZekr"
+
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@color/colorApp"
+                    android:drawablePadding="@dimen/padding_15"
+                    android:drawableTop="@drawable/discovermoshafbig"
+                    android:gravity="center"
+                    android:padding="@dimen/padding_10"
+                    android:text="@string/DailyDhikr"
+                    android:textSize="10sp" />
+
+                <TextView
+                    android:id="@+id/DUA"
+
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/height_10"
+                    android:layout_weight="1"
+                    android:background="@color/colorApp"
+                    android:drawablePadding="@dimen/padding_15"
+
+                    android:drawableTop="@drawable/discovermoshafbig"
+                    android:gravity="center"
+                    android:padding="@dimen/padding_10"
+                    android:text="@string/DUA"
+                    android:textSize="10sp" />
+
+                <TextView
+                    android:id="@+id/AdanAndTakber"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/height_10"
+                    android:layout_weight="1"
+                    android:background="@color/colorApp"
+                    android:drawablePadding="@dimen/padding_15"
+                    android:drawableTop="@drawable/discovermoshafbig"
+                    android:gravity="center"
+                    android:padding="@dimen/padding_10"
+                    android:text="@string/AdanAndTakbier"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/height_10"
+                android:weightSum="3">
+
+                <TextView
+                    android:id="@+id/AmazingQuran"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@color/colorApp"
+                    android:drawablePadding="@dimen/padding_15"
+                    android:drawableTop="@drawable/discovermoshafbig"
+                    android:gravity="center"
+                    android:padding="@dimen/padding_10"
+                    android:text="@string/amazinQuraan"
+                    android:textSize="10sp"
+
+                    />
+
+                <TextView
+                    android:id="@+id/VisitorRecitation"
+
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/height_10"
+                    android:layout_weight="1"
+                    android:background="@color/colorApp"
+                    android:drawablePadding="@dimen/padding_15"
+                    android:drawableTop="@drawable/discovermoshafbig"
+                    android:gravity="center"
+                    android:padding="@dimen/padding_10"
+                    android:text="@string/VisitorsRecitations"
+                    android:textSize="10sp" />
+
+                <TextView
+                    android:id="@+id/RareRecitation"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/height_10"
+                    android:layout_weight="1"
+                    android:background="@color/colorApp"
+                    android:drawablePadding="@dimen/padding_15"
+                    android:drawableTop="@drawable/discovermoshafbig"
+                    android:gravity="center"
+                    android:padding="@dimen/padding_10"
+                    android:text="@string/RareRecitations"
+                    android:textSize="10sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/VidioAndBroadcast"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/margin_20"
+                android:background="@color/colorApp"
+                android:gravity="center"
+                android:padding="@dimen/margin_20">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorApp"
+                    android:drawablePadding="@dimen/height_10"
+                    android:drawableStart="@drawable/discovermoshafsmall"
+                    android:text="@string/VideosLives"
+                    android:textSize="10sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

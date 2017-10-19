@@ -1,0 +1,70 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.pentavalue.tvquran.ui.fragments.ContactUsFragment">
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/connectionLayout"
+            layout="@layout/top_layout_connection"
+            android:visibility="gone"></include>
+
+
+        <TextView
+            android:layout_marginTop="@dimen/margin_20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="@dimen/mediumTextSize"
+            android:text="@string/ContactUSAndYouWill" />
+        <EditText
+            android:id="@+id/userName"
+            android:layout_marginTop="@dimen/margin_20"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/name"
+            android:textSize="@dimen/mediumTextSize"
+            android:nextFocusDown="@+id/emailAddress"/>
+        <EditText
+            android:id="@+id/emailAddress"
+            android:layout_marginTop="@dimen/margin_20"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/EmailAddress"
+            android:textSize="@dimen/mediumTextSize"
+            android:inputType="textEmailAddress"
+            android:nextFocusDown="@+id/message"/>
+        <EditText
+            android:id="@+id/message"
+            android:layout_marginTop="@dimen/margin_20"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/Message"
+            android:textSize="@dimen/mediumTextSize"
+           />
+        <Button
+            android:id="@+id/send"
+            android:layout_marginTop="70dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:background="@drawable/rounded_txt"
+            android:text="@string/Send"
+            android:textAllCaps="false"
+            android:textSize="@dimen/largeTextSize"
+            android:enabled="false"    />
+
+    </LinearLayout>
+</ScrollView>
+</FrameLayout>

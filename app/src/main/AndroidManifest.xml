@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.pentavalue.tvquran">
+
+    <!-- Access internet permission -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <application
+        android:name=".application.ApplicationController"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_tv"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:roundIcon="@mipmap/ic_tv"
+        android:supportsRtl="true"
+        android:theme="@style/MyMaterialTheme.Base">
+        <activity
+            android:name=".ui.activities.SplashActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.activities.ParentActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/MyMaterialTheme.Base"
+            android:windowSoftInputMode="adjustPan"/>
+
+        <receiver android:name=".recivers.ConnectivityReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".recivers.DownloadProgressReciver"></receiver>
+
+        <service android:name=".service.DownloadService" />
+
+        <activity android:name=".ui.activities.HomeActivity" />
+        <activity android:name=".ui.activities.ReportActivity"></activity>
+        <receiver android:name=".widget.PlayerWidget">
+        <intent-filter>
+            <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            <action android:name="android.intent.action.USER_PRESENT"/>
+            <action android:name="com.pentavalue.tvquran.widget.PLAY_BUTTON"/>
+            <action android:name="com.pentavalue.tvquran.widget.PREV_BUTTON"/>
+            <action android:name="com.pentavalue.tvquran.widget.NEXT_BUTTON"/>
+            <action android:name="com.pentavalue.tvquran.widget.DOWNLOAD_BUTTON"/>
+            <action android:name="com.pentavalue.tvquran.widget.AUTO_BUTTON"/>
+        </intent-filter>
+
+        <meta-data android:name="android.appwidget.provider"
+            android:resource="@xml/player_widget"></meta-data>
+
+    </receiver>
+    </application>
+
+</manifest>

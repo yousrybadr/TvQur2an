@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sliding_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="bottom"
+    sothree:umanoDragView="@+id/playerLayout"
+    sothree:umanoOverlay="true"
+    sothree:umanoPanelHeight="68dp"
+    sothree:umanoShadowHeight="4dp"
+    tools:context=".ui.activities.ParentActivity">
+    <!--main activity layout-->
+    <RelativeLayout
+        android:id="@+id/contanier_frame_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.activities.ParentActivity">
+
+        <include
+            android:id="@+id/topbar"
+            layout="@layout/top_bar_home" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/tabs"
+            android:layout_below="@+id/topbar">
+
+            <include
+                android:id="@+id/connectionLayout"
+                layout="@layout/top_layout_connection"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/moreTopLayout"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/colorOrange"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/connectionTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:text="@string/InternetConnectionDetected"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="@dimen/mediumTextSize" />
+
+                <TextView
+                    android:id="@+id/txtGo_online"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="10dp"
+                    android:text="@string/GoOnline"
+                    android:textColor="@color/colorBlue"
+                    android:textSize="@dimen/mediumTextSize"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+            <FrameLayout
+                android:id="@+id/content_frame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/moreTopLayout"
+                android:orientation="vertical">
+
+
+
+
+            </FrameLayout>
+
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <include
+        android:id="@+id/playerLayout"
+        layout="@layout/fragment_player_view_pager"></include>
+
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
+
