@@ -75,6 +75,15 @@ public class NetworkConstants {
     public static String ABOUT_URL="https://www.tvquran.com/en/page/6/about-us";
         public static String TERMS_OF_US="https://www.tvquran.com/en/page/5/tearms-of-use";
 
+
+    public static String GET_ABOUT_US = "http://api.tvquran.com/about_us";
+
+    public static String GET_Advertise_US = "http://api.tvquran.com/terms?lang=ar";
+    public static String GET_TERMS = "http://api.tvquran.com/terms?lang=ar";
+
+
+
+
     public static final class categories {
         public static final int DUA = 4;
         public static final int RecitationByChildren = 7;

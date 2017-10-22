@@ -41,6 +41,7 @@
         <receiver android:name=".recivers.DownloadProgressReciver"></receiver>
 
         <service android:name=".service.DownloadService" />
+        <service android:name=".service.NotifiationService" />
 
         <activity android:name=".ui.activities.HomeActivity" />
         <activity android:name=".ui.activities.ReportActivity"></activity>

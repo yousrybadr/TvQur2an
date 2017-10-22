@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.pentavalue.tvquran.R;
 import com.pentavalue.tvquran.application.ApplicationController;
@@ -41,12 +43,28 @@ public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAd
     ProgressDialog bar;
     Handler mHandler;
     DataViewHolder currentViewHolder;
+    private Runnable mUpdateTimeTask = new Runnable() {
+        @Override
+        public void run() {
+            long totalDuration = ((ParentActivity) mContext).getDuration();
+            long currentDuration = ((ParentActivity) mContext).getCurrentDuration();
+            currentViewHolder.totalTime.setText("" + TimeUtilities.milliSecondsToTimer(totalDuration));
+            // Displaying time completed playing
+            currentViewHolder.txtDuration.setText("" + TimeUtilities.milliSecondsToTimer(mp.getCurrentPosition()));
+            //   Log.i("LOLO",""+TimeUtilities.milliSecondsToTimer(currentDuration));
+            // Updating progress bar
+            int progress = (int) (TimeUtilities.getProgressPercentage(currentDuration, totalDuration));
+            //Log.d("Progress", ""+progress);
+            currentViewHolder.playerSeekBar.setProgress((int) mp.getCurrentPosition());
+            mHandler.postDelayed(this, 100);
+        }
+    };
 
     public PlayerRecyclerAdapter(ArrayList<Entries> mList, Context mContext) {
         this.mList = mList;
         this.mContext = mContext;
-        mHandler=new Handler();
-       // mp = new MediaPlayer();
+        mHandler = new Handler();
+        // mp = new MediaPlayer();
     }
 
     @Override
@@ -60,29 +78,30 @@ public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAd
     @Override
     public void onBindViewHolder(final DataViewHolder holder, final int position) {
 
-        currentViewHolder=holder;
+        currentViewHolder = holder;
         if (HistoryTable.getInstance().getDownloadByID(mList.get(position).getId()) == null) {
-          holder.  btnDownload.setImageDrawable(mContext.getResources().getDrawable(R.drawable.playerdownload));
+            holder.btnDownload.setImageDrawable(mContext.getResources().getDrawable(R.drawable.playerdownload));
         } else {
-           holder. btnDownload.setImageDrawable(mContext.getResources().getDrawable(R.drawable.playerdownloaded));
+            holder.btnDownload.setImageDrawable(mContext.getResources().getDrawable(R.drawable.playerdownloaded));
 
         }
-       holder.shikhName.setText(mList.get(position).getReciter_name());
-       holder.txt_suraName.setText(mList.get(position).getTitle());
+        holder.shikhName.setText(mList.get(position).getReciter_name());
+        holder.txt_suraName.setText(mList.get(position).getTitle());
         holder.txtListn.setText(String.valueOf(mList.get(position).getViews_count()));
-     holder.   txtLikes.setText(String.valueOf(mList.get(position).getUpVotes()));
+        holder.txtLikes.setText(String.valueOf(mList.get(position).getUpVotes()));
         if (position != mList.size() - 1) {
-          holder.  next_suraName.setText(mList.get(position + 1).getTitle());
-           holder. txtNextShikhName.setText(mList.get(position + 1).getReciter_name());
+            holder.next_suraName.setText(mList.get(position + 1).getTitle());
+            holder.txtNextShikhName.setText(mList.get(position + 1).getReciter_name());
         }
-        long totalDuration = ((ParentActivity)mContext).getDuration();
-        long currentDuration = ((ParentActivity)mContext).getCurrentDuration();
+        long totalDuration = ((ParentActivity) mContext).getDuration();
+        Log.v("Yousry", "" + totalDuration);
+        long currentDuration = ((ParentActivity) mContext).getCurrentDuration();
         // Displaying Total Duration time
-      holder.  totalTime.setText(""+ TimeUtilities.milliSecondsToTimer(totalDuration));
+        holder.totalTime.setText("" + TimeUtilities.milliSecondsToTimer(totalDuration));
         // Displaying time completed playing
-      holder.  txtDuration.setText(""+TimeUtilities.milliSecondsToTimer(currentDuration));
+        holder.txtDuration.setText("" + TimeUtilities.milliSecondsToTimer(currentDuration));
         Picasso.with(mContext).load(mList.get(position).getReciter_photo()).into(holder.imgProfile);
-      holder.  reportBtn.setOnClickListener(new View.OnClickListener() {
+        holder.reportBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, ReportActivity.class);
@@ -93,34 +112,46 @@ public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAd
             }
         });
         mp = ((ParentActivity) mContext).getMediaPlayer();
+
         mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                if (((ParentActivity)mContext).isRepeat()){
-                    ((ParentActivity)mContext).playSound(mList.get(position).getSoundPath());
+                if (((ParentActivity) mContext).isRepeat()) {
+                    ((ParentActivity) mContext).playSound(mList.get(position).getSoundPath());
                 }
+                ((ParentActivity) mContext).jumpToNext(null);
+                Toast.makeText(mContext, "Sura " + mList.get(position).getTitle() + " is finished", Toast.LENGTH_SHORT).show();
             }
         });
-        if (mp != null && mp.isPlaying())
-         holder.   btnPlay.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.playerpause));
-        else
-         holder.   btnPlay.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.playerplay));
 
-        holder.playerSeekBar.setClickable(false);
-        holder.playerSeekBar.setMax((int)totalDuration);
-       holder. playerSeekBar.setProgress((int)currentDuration);
-        if (mp!=null && mp.isPlaying()){
-          holder.  playerSeekBar.setProgress((int)currentDuration);
-            updateSeekBar();
+        if (mp != null && mp.isPlaying())
+            holder.btnPlay.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.playerpause));
+        else
+            holder.btnPlay.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.playerplay));
+
+        //holder.playerSeekBar.setClickable(false);
+        holder.playerSeekBar.setMax((int) totalDuration);
+        holder.playerSeekBar.setProgress((int) currentDuration);
+        if (mp != null && mp.isPlaying()) {
+            //holder.playerSeekBar.setProgress((int) currentDuration);
+            //updateSeekBar();
 
         }
+/*
         holder.playerSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-                  mHandler.removeCallbacks(mUpdateTimeTask);
-
+                //mHandler.removeCallbacks(mUpdateTimeTask);
                 mp.seekTo(progress);
-                updateSeekBar();
+                Log.v("Yousry", "" + b);
+                int totalDuration = ((ParentActivity) mContext).getDuration();
+
+                int currentPosition = TimeUtilities.progressToTimer(seekBar.getProgress(), totalDuration);
+
+                holder.txtDuration.setText("" + TimeUtilities.milliSecondsToTimer(currentPosition));
+
+                Log.v("Yousry", "" + progress);
+                //updateSeekBar();
             }
 
             @Override
@@ -132,9 +163,10 @@ public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAd
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 mHandler.removeCallbacks(mUpdateTimeTask);
-                int totalDuration = ((ParentActivity)mContext).getDuration();
+                int totalDuration = ((ParentActivity) mContext).getDuration();
                 int currentPosition = TimeUtilities.progressToTimer(seekBar.getProgress(), totalDuration);
-                holder.   txtDuration.setText(""+TimeUtilities.milliSecondsToTimer(currentPosition));
+                //holder.txtDuration.setText("" + TimeUtilities.milliSecondsToTimer(currentPosition));
+
 
                 // forward or backward to certain seconds
                 mp.seekTo(currentPosition);
@@ -143,6 +175,7 @@ public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAd
                 updateSeekBar();
             }
         });
+*/
 
     }
 
@@ -151,8 +184,19 @@ public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAd
         return mList.size();
     }
 
+    private void updateSeekBar() {
 
-    public class DataViewHolder extends RecyclerView.ViewHolder{
+        ApplicationController.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                mHandler.postDelayed(mUpdateTimeTask, 100);
+
+            }
+        });
+
+    }
+
+    public class DataViewHolder extends RecyclerView.ViewHolder {
 
         @Bind(R.id.txt_duration)
         TextView txtDuration;
@@ -182,40 +226,12 @@ public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAd
         SeekBar playerSeekBar;
         @Bind(R.id.btn_report)
         ImageButton reportBtn;
+
         public DataViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
     }
-
-    private void updateSeekBar() {
-
-        ApplicationController.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                mHandler.postDelayed(mUpdateTimeTask,100);
-
-            }
-        });
-
-    }
-    private Runnable mUpdateTimeTask=new Runnable() {
-        @Override
-        public void run() {
-            long totalDuration = ((ParentActivity)mContext).getDuration();
-            long currentDuration = ((ParentActivity)mContext).getCurrentDuration();
-          currentViewHolder.  totalTime.setText(""+ TimeUtilities.milliSecondsToTimer(totalDuration));
-            // Displaying time completed playing
-            currentViewHolder.txtDuration.setText(""+TimeUtilities.milliSecondsToTimer(mp.getCurrentPosition()));
-            //   Log.i("LOLO",""+TimeUtilities.milliSecondsToTimer(currentDuration));
-            // Updating progress bar
-            int progress = (int)(TimeUtilities.getProgressPercentage(currentDuration, totalDuration));
-            //Log.d("Progress", ""+progress);
-            currentViewHolder.playerSeekBar.setProgress((int)mp.getCurrentPosition());
-            mHandler.postDelayed(this, 100);
-        }
-    };
-
 
 
 }

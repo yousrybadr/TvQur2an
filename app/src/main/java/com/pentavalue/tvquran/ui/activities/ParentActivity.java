@@ -297,6 +297,10 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
         });
     }
 
+    public int getPosition() {
+        return position;
+    }
+
     private void setupSlidingPanelLayout() {
 
         slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
@@ -320,12 +324,11 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
                    /* suraViewPager.setAdapter(new PlayerPagerAdapter(mList, activity));
                     suraViewPager.getAdapter().notifyDataSetChanged();*/
                     isFromSlidePanal = true;
-                   /* suraViewPager.setAdapter(new PlayerFragmentAdapter(getSupportFragmentManager(), getApplicationContext(), mList));
-                    suraViewPager.getAdapter().notifyDataSetChanged();
-                    suraViewPager.setCurrentItem(position);*/
+
                     suraRV.setAdapter(new PlayerRecyclerAdapter(mList, activity));
                     suraRV.getAdapter().notifyDataSetChanged();
                     suraRV.scrollToPosition(position);
+
                    /* View v = linearLayoutManager.findViewByPosition(position);
                     if (v!=null) {
                         SeekBar seekBar = (SeekBar) v.findViewById(R.id.seekbar);
@@ -436,16 +439,7 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //   addIconToTaps();
-        ApplicationController.getInstance().setConnectivityListener(this);
-        ApplicationController.getInstance().setDownloadListner(this);
-        //checkConnection();
-      /*  mTracker.setScreenName("Parent Activity");
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());*/
-    }
+
 
     private void addIconToTaps() {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -511,20 +505,7 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // ButterKnife.unbind(this);
-        unregisterReceiver(receiver);
-        unregisterReceiver(FailReciver);
-        unregisterReceiver(downloadProgressReciver);
-   /*     LocalBroadcastManager.getInstance(this).unregisterReceiver(
-                downloadProgressReciver);*/
-        if (mp != null && mp.isPlaying()) {
-            mp.stop();
-        }
 
-    }
 
     @Override
     public void onClick(View v) {
@@ -637,7 +618,7 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
                                             ImageView btnPlay = (ImageView) v.findViewById(R.id.img_play);
                                             btnPlay.setBackgroundDrawable(getResources().getDrawable(R.drawable.playerpause));
                                             SeekBar seekBar = (SeekBar) v.findViewById(R.id.seekbar);
-                                            seekBar.setProgress(currentLenght);
+                                            //seekBar.setProgress(currentLenght);
                                         }
                                     }
                                     Log.i("LOLO", "duration=" + duration);
@@ -675,7 +656,7 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
                                         ImageView btnPlay = (ImageView) v.findViewById(R.id.img_play);
                                         btnPlay.setBackgroundDrawable(getResources().getDrawable(R.drawable.playerpause));
                                         SeekBar seekBar = (SeekBar) v.findViewById(R.id.seekbar);
-                                        seekBar.setProgress(currentLenght);
+                                        //seekBar.setProgress(currentLenght);
                                     }
                                 }
                                 currentDuration = mp.getCurrentPosition();
@@ -725,7 +706,7 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
                     if (slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
                         currentLenght = 0;
                         suraRV.getLayoutManager().scrollToPosition(position + 1);
-
+                        //jumpToNext(null);
                     }
                     //suraViewPager.setCurrentItem(position + 1, true);
                     //  }
@@ -1085,7 +1066,7 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
                     btnPlay.setBackgroundDrawable(getResources().getDrawable(R.drawable.playerpause));
                     playSound(mList.get(position).getSoundPath());
 
-                    updateSeekBar();
+                    //updateSeekBar();
                 }
             }
 
@@ -1110,9 +1091,45 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
             @Override
             public void run() {
                 mHandler.postDelayed(mUpdateTimeTask, 100);
-
             }
         });
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //   addIconToTaps();
+        ApplicationController.getInstance().setConnectivityListener(this);
+        ApplicationController.getInstance().setDownloadListner(this);
+        //checkConnection();
+      /*  mTracker.setScreenName("Parent Activity");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());*/
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // ButterKnife.unbind(this);
+        unregisterReceiver(receiver);
+        unregisterReceiver(FailReciver);
+        unregisterReceiver(downloadProgressReciver);
+   /*     LocalBroadcastManager.getInstance(this).unregisterReceiver(
+                downloadProgressReciver);*/
+        if (mp != null && mp.isPlaying()) {
+            mp.stop();
+        }
 
     }
 

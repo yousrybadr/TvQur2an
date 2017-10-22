@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.pentavalue.tvquran.R;
-import com.pentavalue.tvquran.data.constants.NetworkConstants;
 import com.pentavalue.tvquran.network.listeneres.ConnectivityReceiverListener;
 import com.pentavalue.tvquran.recivers.ConnectivityReceiver;
 import com.pentavalue.tvquran.ui.activities.ParentActivity;
@@ -23,10 +22,6 @@ import butterknife.ButterKnife;
  * create an instance of this fragment.
  */
 public class MoreFragment extends Fragment implements View.OnClickListener,ConnectivityReceiverListener {
-    public MoreFragment() {
-        // Required empty public constructor
-    }
-
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -44,6 +39,11 @@ public class MoreFragment extends Fragment implements View.OnClickListener,Conne
     @Bind(R.id.noConnectionLayout)
     LinearLayout noConnection;
     boolean isConnected;
+
+    public MoreFragment() {
+        // Required empty public constructor
+    }
+
     // TODO: Rename and change types and number of parameters
     public static MoreFragment newInstance() {
         MoreFragment fragment = new MoreFragment();
@@ -98,15 +98,29 @@ public class MoreFragment extends Fragment implements View.OnClickListener,Conne
                 openContactUSFragment();
                 break;
             case R.id.aboutLayout:
-                ((ParentActivity)getActivity()).replaceFragment(AboutWebFragment.newInstance(NetworkConstants.ABOUT_URL
-                ,getString(R.string.About)),false,false);
+                //((ParentActivity)getActivity()).replaceFragment(AboutWebFragment.newInstance(NetworkConstants.ABOUT_URL,getString(R.string.About)),false,false);
+                openAboutUsFragment();
                 break;
-
             case  R.id.termsOfUse:
-                ((ParentActivity)getActivity()).replaceFragment(AboutWebFragment.newInstance(NetworkConstants.TERMS_OF_US,
-                        getString(R.string.TermsOfUse)),false,false);
-
+                //((ParentActivity)getActivity()).replaceFragment(TermsFragment.newInstance(),false,false);
+                openTermsFragment();
         }
+    }
+
+
+    private void openAboutUsFragment() {
+        ((ParentActivity) getActivity())
+                .replaceFragment(
+                        AboutWebFragment.newInstance("about_tag", getString(R.string.About)), false, false
+                );
+    }
+
+
+    private void openTermsFragment() {
+        ((ParentActivity) getActivity())
+                .replaceFragment(
+                        AboutWebFragment.newInstance("terms_tag", getString(R.string.TermsOfUse)), false, false
+                );
     }
 
     private void openContactUSFragment() {
