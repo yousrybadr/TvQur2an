@@ -37,6 +37,7 @@ import android.widget.Toast;
 import com.pentavalue.tvquran.R;
 import com.pentavalue.tvquran.adapter.PlayerRecyclerAdapter;
 import com.pentavalue.tvquran.application.ApplicationController;
+import com.pentavalue.tvquran.data.constants.Params;
 import com.pentavalue.tvquran.datasorage.database.HistoryTable;
 import com.pentavalue.tvquran.model.Entries;
 import com.pentavalue.tvquran.network.NetworkChecker;
@@ -47,6 +48,7 @@ import com.pentavalue.tvquran.recivers.DownloadProgressReciver;
 import com.pentavalue.tvquran.recivers.DownloadReceiver;
 import com.pentavalue.tvquran.recivers.SoundDownloadReciver;
 import com.pentavalue.tvquran.service.DownloadService;
+import com.pentavalue.tvquran.service.NotificationService;
 import com.pentavalue.tvquran.ui.fragments.AlphabeticalHolyQuranFragment;
 import com.pentavalue.tvquran.ui.fragments.CatogryFragment;
 import com.pentavalue.tvquran.ui.fragments.DiscoverFragment;
@@ -82,6 +84,8 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
         ConnectivityReceiverListener,
         OnDownloadCompleteListner {
 
+    private static final String Tag = ParentActivity.class.getSimpleName();
+    private static final String mediaTag = MediaPlayer.class.getSimpleName() + "_" + Tag;
 
     private static final int REQUEST_ACCESS_STORAGE = 112;
     public static ArrayList<Entries> mList = new ArrayList<>();
@@ -103,7 +107,7 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
     @Bind(R.id.ReciterName)
     TextView txt_reciterName;
     @Bind(R.id.PauseImg)
-    ImageView playPuseBtn;
+    ImageView playPauseBtn;
     @Bind(R.id.content_frame)
     FrameLayout fragmentContainer;
     @Bind(R.id.connectionLayout)
@@ -287,10 +291,10 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
                 //  if (newState==RecyclerView.SCROLL_STATE_IDLE) {
                 currentLenght = 0;
                 position = linearLayoutManager.findFirstVisibleItemPosition();
-                Log.i("ZOZO", "after scroll>>>" + position);
+                Log.i(Tag, "after scroll>>>" + position);
                 suraURL = mList.get(position).getSoundPath();
                 model = mList.get(position);
-                playSound(suraURL);
+                playSound(suraURL, model);
             }
 
             // }
@@ -307,20 +311,20 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
         slidingLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
-                Log.i("LOLO", "onPanelSlide, offset " + slideOffset);
+                Log.i(Tag, "onPanelSlide, offset " + slideOffset);
             }
 
             @Override
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
-                Log.i("LOLO", "onPanelStateChanged " + newState);
-                Log.i("LOLO", "onPanelStateChanged " + position);
+                Log.i(Tag, "onPanelStateChanged " + newState);
+                Log.i(Tag, "onPanelStateChanged " + position);
 
                 if (slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN && mp.isPlaying()) {
                     //  playerSmallLayout.setVisibility(View.GONE);
                     slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                 } else if (slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
                     playerSmallLayout.setVisibility(View.GONE);
-                    Log.i("ZOZO", "current expand>>" + currentLenght);
+                    Log.i(Tag, "current expand>>" + currentLenght);
                    /* suraViewPager.setAdapter(new PlayerPagerAdapter(mList, activity));
                     suraViewPager.getAdapter().notifyDataSetChanged();*/
                     isFromSlidePanal = true;
@@ -334,9 +338,9 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
                         SeekBar seekBar = (SeekBar) v.findViewById(R.id.seekbar);
                         seekBar.setProgress(currentLenght);
                     }*/
-                    Log.i("LOLO", "from panal>>>>" + position);
+                    Log.i(Tag, "from panal>>>>" + position);
                 } else if (slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED) {
-                    Log.i("ZOZO", "current collapsed>>" + currentLenght);
+                    Log.i(Tag, "current collapsed>>" + currentLenght);
                     if (position >= 0 && position <= mList.size()) {
                         updateSmallPlayer(mList.get(position));
                         playerSmallLayout.setVisibility(View.VISIBLE);
@@ -358,16 +362,16 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
 
             /*if (fromList) {
                 if (mp != null && mp.isPlaying()) {
-                    playPuseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outpause));
+                    playPauseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outpause));
                 } else {
-                    playPuseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outplay));
+                    playPauseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outplay));
 
                 }
             } else {
                 if (mp != null && mp.isPlaying()) {
-                    playPuseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outpause));
+                    playPauseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outpause));
                 } else {
-                    playPuseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outplay));
+                    playPauseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outplay));
 
                 }
             }
@@ -440,7 +444,6 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
     }
 
 
-
     private void addIconToTaps() {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -506,7 +509,6 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
     }
 
 
-
     @Override
     public void onClick(View v) {
 
@@ -537,37 +539,39 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
 
     }
 
-    public void showPlayerAndPlaySound(ArrayList<Entries> dataList, int pos) {
+    public void showPlayerAndPlaySound(final ArrayList<Entries> dataList, int pos) {
         //mList.clear();
         fromList = true;
-        suraURL = dataList.get(pos).getSoundPath();
+        final Entries model = dataList.get(pos);
+        suraURL = model.getSoundPath();
         mList = dataList;
         position = pos;
-        Log.i("LOLO", "click>> " + position);
+        Log.i(mediaTag, "click  >> " + position);
         currentLenght = 0;
         if (slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN) {
             // slidingLayout.setPanelHeight(60);
             slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         }
+
         saveToHistory(dataList.get(pos));
         suraRV.scrollToPosition(pos);
-        playSound(suraURL);
-        playPuseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outpause));
+        playSound(suraURL, dataList.get(pos));
+        playPauseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outpause));
 
         isSoundPlay = true;
         txt_souraName.setText(dataList.get(pos).getTitle());
         txt_reciterName.setText(dataList.get(pos).getReciter_name());
-        playPuseBtn.setOnClickListener(new View.OnClickListener() {
+        playPauseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //create media player
-                if (isSoundPlay == false) {
-                    playSound(suraURL);
-                    playPuseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outpause));
+                if (!isSoundPlay) {
+                    playSound(suraURL, model);
+                    playPauseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outpause));
                     isSoundPlay = true;
                 } else {
                     isSoundPlay = false;
-                    playPuseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outplay));
+                    playPauseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outplay));
                     if (mp != null && mp.isPlaying())
                         currentLenght = mp.getCurrentPosition();
                     //  mp.seekTo(currentLenght);
@@ -587,11 +591,18 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
         return mp;
     }
 
-    public void playSound(final String soundURL) {
-        Log.d("LOLO", "from pager" + suraURL);
+    public void playSound(final String soundURL, Entries model) {
+        Log.d(mediaTag, "from pager" + suraURL);
+        /*Intent intent = new Intent(getApplicationContext(), NotificationService.class);
+        intent.setAction(NotificationService.ACTION_PLAY);
+
+        intent.putExtra("Model", model);
+        startService(intent);*/
+
         if (mp != null && !mp.isPlaying()) {
 
             // try {
+
 
             if (currentLenght != 0) {
                 mp.seekTo(currentLenght);
@@ -621,8 +632,8 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
                                             //seekBar.setProgress(currentLenght);
                                         }
                                     }
-                                    Log.i("LOLO", "duration=" + duration);
-                                    Log.i("LOLO", "current=" + currentDuration);
+                                    Log.i(mediaTag, "duration=" + duration);
+                                    Log.i(mediaTag, "current=" + currentDuration);
 
                                 }
                             });
@@ -660,8 +671,8 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
                                     }
                                 }
                                 currentDuration = mp.getCurrentPosition();
-                                Log.i("LOLO", "duration=" + duration);
-                                Log.i("LOLO", "current=" + currentDuration);
+                                Log.i(mediaTag, "duration=" + duration);
+                                Log.i(mediaTag, "current=" + currentDuration);
 
                             }
                         });
@@ -678,9 +689,9 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
             @Override
             public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
             /*    DialogUtilit dialogUtilit=new DialogUtilit();
-                 final Dialog dialog = dialogUtilit.showCustomDialog(activity, getString(R.string.error_play_sound));
-               // dialogUtilit.showCustomDialog(activity,getString(R.string.error_play_sound));
-              //  e.printStackTrace();
+                final Dialog dialog = dialogUtilit.showCustomDialog(activity, getString(R.string.error_play_sound));
+                // dialogUtilit.showCustomDialog(activity,getString(R.string.error_play_sound));
+                //  e.printStackTrace();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -702,7 +713,8 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
                     mp.setLooping(false);
                     //  if (position< mList.size()){
                       /*  Entries next=mList.get(position);
-                        playSound(next.getSoundPath());*/
+                    playSound(next.getSoundPath());*/
+                    Log.v(Tag, "onComplete From Parent Activity");
                     if (slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
                         currentLenght = 0;
                         suraRV.getLayoutManager().scrollToPosition(position + 1);
@@ -870,7 +882,7 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
 
         fromList = false;
         position = position + 1;
-        Log.i("LOLO", "from next>>>>" + position);
+        Log.i(mediaTag, "from next>>>>" + position);
         if (position >= mList.size()) {
 
             position = mList.size() - 1;
@@ -879,7 +891,7 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
         else {
             linearLayoutManager.scrollToPosition(position);
             currentLenght = 0;
-            playSound(mList.get(position).getSoundPath());
+            playSound(mList.get(position).getSoundPath(), mList.get(position));
         }
     }
 
@@ -892,7 +904,7 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
         } else {
             linearLayoutManager.scrollToPosition(position);
             currentLenght = 0;
-            playSound(mList.get(position).getSoundPath());
+            playSound(mList.get(position).getSoundPath(), mList.get(position));
         }
 
     }
@@ -990,7 +1002,7 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
                 mList.get(position).setIsDownloaded(1);
                 //  mList.get(position).setIsHistory(0);
                 HistoryTable.getInstance().insertDownLoadyModel(mList.get(position));
-                Log.i("ZOZ", HistoryTable.getInstance().GetDownloadedList().size() + "");
+                Log.i(Tag, HistoryTable.getInstance().GetDownloadedList().size() + "");
                 showInitLoading();
                 //mList.get(position).setIsDownloaded(1);
 
@@ -1047,7 +1059,7 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, suraURL);
-        Log.i("LOLO", "" + suraURL);
+        Log.i(mediaTag, "" + suraURL);
         startActivity(Intent.createChooser(shareIntent, "Share sura "));
     }
 
@@ -1064,7 +1076,7 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
                     seekBar.setProgress(currentLenght);
                     ImageView btnPlay = (ImageView) v.findViewById(R.id.img_play);
                     btnPlay.setBackgroundDrawable(getResources().getDrawable(R.drawable.playerpause));
-                    playSound(mList.get(position).getSoundPath());
+                    playSound(mList.get(position).getSoundPath(), mList.get(position));
 
                     //updateSeekBar();
                 }
@@ -1099,6 +1111,12 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
     @Override
     protected void onStart() {
         super.onStart();
+        Intent stopIntent = new Intent(this, NotificationService.class);
+        stopIntent.setAction(Params.ACTIONS.ACTION_STOP);
+        startService(stopIntent);
+        if (mp != null) {
+            mp.start();
+        }
     }
 
     @Override
@@ -1114,13 +1132,49 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+
+
+        try {
+            if (mp != null && mp.isPlaying()) {
+                int progress = mp.getCurrentPosition() / 1000;
+                Intent intent = new Intent(getApplicationContext(), NotificationService.class);
+                intent.setAction(Params.ACTIONS.ACTION_PLAY);
+                intent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_PROGRESS, progress);
+                intent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_POSITION, position);
+                intent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_MODEL, mList.get(position));
+                if (position >= 0 && position < mList.size())
+                    startService(intent);
+
+                ApplicationController.getInstance().shutDownExecuterService();
+
+                mp.stop();
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
+
+        if (mp != null && mp.isPlaying()) {
+            mp.stop();
+
+        }
+        ApplicationController.getInstance().shutDownExecuterService();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Intent stopIntent = new Intent(this, NotificationService.class);
+        stopIntent.setAction(Params.ACTIONS.STOPFOREGROUND_ACTION);
+        startService(stopIntent);
         // ButterKnife.unbind(this);
         unregisterReceiver(receiver);
         unregisterReceiver(FailReciver);
@@ -1129,6 +1183,8 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
                 downloadProgressReciver);*/
         if (mp != null && mp.isPlaying()) {
             mp.stop();
+            mp.release();
+
         }
 
     }

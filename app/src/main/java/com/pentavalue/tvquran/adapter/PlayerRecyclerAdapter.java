@@ -117,7 +117,7 @@ public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAd
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
                 if (((ParentActivity) mContext).isRepeat()) {
-                    ((ParentActivity) mContext).playSound(mList.get(position).getSoundPath());
+                    ((ParentActivity) mContext).playSound(mList.get(position).getSoundPath(), mList.get(position));
                 }
                 ((ParentActivity) mContext).jumpToNext(null);
                 Toast.makeText(mContext, "Sura " + mList.get(position).getTitle() + " is finished", Toast.LENGTH_SHORT).show();

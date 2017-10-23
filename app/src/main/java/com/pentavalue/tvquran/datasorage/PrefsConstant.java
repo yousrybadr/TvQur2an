@@ -10,7 +10,7 @@ public class PrefsConstant {
     public static final String WIFI_ONLY = "wifi_only";
     public static final String HISTORY = "history";
 
-    public static String LANG="lang";
+    public static String LANG = "lang";
 
 
 }

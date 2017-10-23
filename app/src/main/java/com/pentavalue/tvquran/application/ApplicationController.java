@@ -15,6 +15,7 @@ import com.pentavalue.tvquran.utils.TypefaceUtils;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
 
@@ -22,17 +23,18 @@ import java.util.concurrent.ThreadFactory;
  * @author Mahmoud Turki
  */
 public class ApplicationController extends Application {
-    private Handler mHandler;
-    private ExecutorService mExecutorService;
     private static final int THREAD_POOL_SIZE = 3;
- /*   private static GoogleAnalytics sAnalytics;
-    private static Tracker sTracker;*/
+    public static boolean appEnterBackGround = false;
     /**
      * A singleton instance of the application class for easy access in other places
      */
     private static ApplicationController app;
-    public static boolean appEnterBackGround = false;
+    /*   private static GoogleAnalytics sAnalytics;
+       private static Tracker sTracker;*/
+    private Handler mHandler;
+    private ExecutorService mExecutorService;
 
+    private Future future;
     /**
      * @return ApplicationController singleton instance
      */
@@ -48,8 +50,10 @@ public class ApplicationController extends Application {
         // initialize the singleton
         app = this;
         mHandler = new Handler();
-        DatabaseManager.getInstance( ).initializeTables();
-     //   sAnalytics = GoogleAnalytics.getInstance(this);
+        DatabaseManager.getInstance().initializeTables();
+
+
+        //   sAnalytics = GoogleAnalytics.getInstance(this);
         // Thread pool init
         mExecutorService = Executors.newScheduledThreadPool(THREAD_POOL_SIZE, new ThreadFactory() {
             @Override
@@ -75,13 +79,16 @@ public class ApplicationController extends Application {
     public void runOnUiThread(Runnable runnable) {
         mHandler.post(runnable);
     }
+
     public void runOnUiMainThread(Runnable runnable) {
         mHandler.post(runnable);
 
     }
 
     public void runInBackground(final Runnable runnable) {
-        mExecutorService.submit(new Runnable() {
+
+
+        future = mExecutorService.submit(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -93,12 +100,18 @@ public class ApplicationController extends Application {
         });
     }
 
-    public void setConnectivityListener( ConnectivityReceiverListener listener) {
+    public void shutDownExecuterService() {
+        mExecutorService.shutdownNow();
+        future.cancel(true);
+
+    }
+
+    public void setConnectivityListener(ConnectivityReceiverListener listener) {
         ConnectivityReceiver.connectivityReceiverListener = listener;
     }
 
-    public void setDownloadListner(OnDownloadCompleteListner listner){
-        SoundDownloadReciver.onDownloadCompleteListner=listner;
+    public void setDownloadListner(OnDownloadCompleteListner listner) {
+        SoundDownloadReciver.onDownloadCompleteListner = listner;
     }
 
     /*synchronized public Tracker getDefaultTracker() {

@@ -20,11 +20,10 @@ public class SearchHistoryTable extends AbstractTable {
     private static final String TABLE_NAME = "SearchHistory";
 
     private static SearchHistoryTable instance;
-    private String[] projection = { Fields.KEY,  Fields.VALUE};
-    final static class Fields implements BaseColumns {
-        public static final String KEY = "key";
-        public static final String VALUE = "search_item";
+    private String[] projection = {Fields.KEY, Fields.VALUE};
 
+    private SearchHistoryTable() {
+        DatabaseManager.getInstance().addTable(this);
     }
 
     public static SearchHistoryTable getInstance() {
@@ -32,15 +31,13 @@ public class SearchHistoryTable extends AbstractTable {
             instance = new SearchHistoryTable();
         return instance;
     }
-    private SearchHistoryTable() {
-        DatabaseManager.getInstance().addTable(this);
-    }
+
     @Override
     protected void create(SQLiteDatabase db) {
         String createSql = "CREATE TABLE " + getTableName() +
-                " (" + _ID + " INTEGER PRIMARY KEY "+ AUTOINCREMENT + COMMA_SEP +
-                Fields.VALUE + TEXT_TYPE +COMMA_SEP +
-                Fields.KEY + TEXT_TYPE +")";
+                " (" + _ID + " INTEGER PRIMARY KEY " + AUTOINCREMENT + COMMA_SEP +
+                Fields.VALUE + TEXT_TYPE + COMMA_SEP +
+                Fields.KEY + TEXT_TYPE + ")";
         db.execSQL(createSql);
     }
 
@@ -52,31 +49,28 @@ public class SearchHistoryTable extends AbstractTable {
         return values;
     }
 
-
     public void insertHistoryModel(MapModel item) {
         DatabaseManager.getInstance().getWritableDatabase()
                 .insert(getTableName(), null, getContentValues(item));
         //MemberNewsTable.getInstance().insertNewsItem( item);
     }
 
-
     private MapModel returnHistoryModel(Cursor cursor) {
 
-        MapModel GModel=null;
-        GModel=new MapModel(cursor.getString(cursor.getColumnIndex(Fields.KEY))
-                ,cursor.getString(cursor.getColumnIndex(Fields.VALUE)));
+        MapModel GModel = null;
+        GModel = new MapModel(cursor.getString(cursor.getColumnIndex(Fields.KEY))
+                , cursor.getString(cursor.getColumnIndex(Fields.VALUE)));
 
         return GModel;
     }
 
-    public ArrayList<MapModel> GetHistoryList( )
-    {
-        Cursor cursor=DatabaseManager.getInstance().getWritableDatabase().query(getTableName(), getProjection(), null, null, null, null, null);
-        ArrayList<MapModel> mList=new ArrayList<>();
+    public ArrayList<MapModel> GetHistoryList() {
+        Cursor cursor = DatabaseManager.getInstance().getWritableDatabase().query(getTableName(), getProjection(), null, null, null, null, null);
+        ArrayList<MapModel> mList = new ArrayList<>();
         if (cursor.moveToFirst()) {
             mList = new ArrayList<>(cursor.getCount());
             do {
-                MapModel nModel=returnHistoryModel(cursor);
+                MapModel nModel = returnHistoryModel(cursor);
 
                 mList.add(nModel);
 
@@ -99,5 +93,11 @@ public class SearchHistoryTable extends AbstractTable {
     @Override
     protected String[] getProjection() {
         return projection;
+    }
+
+    final static class Fields implements BaseColumns {
+        public static final String KEY = "key";
+        public static final String VALUE = "search_item";
+
     }
 }

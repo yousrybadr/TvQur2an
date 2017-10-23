@@ -17,35 +17,16 @@ import static android.provider.BaseColumns._ID;
 
 public class HistoryTable extends AbstractTable {
 
-        private static final String TABLE_NAME = "HistoryTable";
+    private static final String TABLE_NAME = "HistoryTable";
 
     private static HistoryTable instance;
-    private String[] projection = { Fields.SURA_ID,Fields.TITLE,Fields.AUTHOR_ID,Fields.CATEGORY_DESC,
-    Fields.CONTENT,Fields.VIEWCOUNTS,Fields.PATH,Fields.RECITER_NAME,Fields.RECITER_NAME,Fields.RECITER_PHOTO
-    ,Fields.UP_VOTES,Fields.CATEGORY_NAME , Fields.IS_DOWNLOADED,Fields.DOWNLOADED_PATH,
+    private String[] projection = {Fields.SURA_ID, Fields.TITLE, Fields.AUTHOR_ID, Fields.CATEGORY_DESC,
+            Fields.CONTENT, Fields.VIEWCOUNTS, Fields.PATH, Fields.RECITER_NAME, Fields.RECITER_NAME, Fields.RECITER_PHOTO
+            , Fields.UP_VOTES, Fields.CATEGORY_NAME, Fields.IS_DOWNLOADED, Fields.DOWNLOADED_PATH,
             Fields.IS_HISTORY};
 
-    public void deleteFromHistory(int itemId) {
-
-        DatabaseManager.getInstance().getWritableDatabase().delete(TABLE_NAME, "is_Downloaded=1 and "+ Fields.SURA_ID+"="+itemId,null);
-    }
-
-    final static class Fields implements BaseColumns {
-        public static final String SURA_ID = "id";
-        public static final String TITLE = "client_address";
-        public static final String AUTHOR_ID = "author_id";
-        public static final String CONTENT = "content";
-        public static final String VIEWCOUNTS = "views_count";
-        public static final String RECITER_NAME = "reciter_name";
-        public static final String RECITER_PHOTO = "reciter_photo";
-        public static final String CATEGORY_NAME = "category_name";
-        public static final String CATEGORY_DESC = "category_desc";
-        public static final String PATH = "path";
-        public static final String UP_VOTES = "up_votes";
-        public static final String IS_HISTORY = "is_History";
-        public static final String IS_DOWNLOADED = "is_Downloaded";
-        public static final String DOWNLOADED_PATH = "downloaded_path";
-
+    private HistoryTable() {
+        DatabaseManager.getInstance().addTable(this);
     }
 
     public static HistoryTable getInstance() {
@@ -53,27 +34,29 @@ public class HistoryTable extends AbstractTable {
             instance = new HistoryTable();
         return instance;
     }
-    private HistoryTable() {
-        DatabaseManager.getInstance().addTable(this);
+
+    public void deleteFromHistory(int itemId) {
+        DatabaseManager.getInstance().getWritableDatabase().delete(TABLE_NAME, "is_Downloaded=1 and " + Fields.SURA_ID + "=" + itemId, null);
     }
+
     @Override
     protected void create(SQLiteDatabase db) {
         String createSql = "CREATE TABLE " + getTableName() +
-                " (" + _ID + " INTEGER PRIMARY KEY "+ AUTOINCREMENT + COMMA_SEP +
-                Fields.TITLE + TEXT_TYPE +COMMA_SEP +
-                Fields.RECITER_NAME + TEXT_TYPE +COMMA_SEP +
-                Fields.RECITER_PHOTO + TEXT_TYPE +COMMA_SEP +
-                Fields.CATEGORY_DESC + TEXT_TYPE +COMMA_SEP +
-                Fields.PATH + TEXT_TYPE +COMMA_SEP +
-                Fields.DOWNLOADED_PATH + TEXT_TYPE +COMMA_SEP +
-                Fields.CONTENT + TEXT_TYPE +COMMA_SEP +
-                Fields.SURA_ID + NUMBER_TYPE +COMMA_SEP +
-                Fields.UP_VOTES + NUMBER_TYPE +COMMA_SEP +
-                Fields.VIEWCOUNTS + NUMBER_TYPE +COMMA_SEP +
-                Fields.AUTHOR_ID + NUMBER_TYPE +COMMA_SEP +
-                Fields.IS_DOWNLOADED + NUMBER_TYPE +COMMA_SEP +
-                Fields.IS_HISTORY + NUMBER_TYPE +COMMA_SEP +
-                Fields.CATEGORY_NAME + TEXT_TYPE +")";
+                " (" + _ID + " INTEGER PRIMARY KEY " + AUTOINCREMENT + COMMA_SEP +
+                Fields.TITLE + TEXT_TYPE + COMMA_SEP +
+                Fields.RECITER_NAME + TEXT_TYPE + COMMA_SEP +
+                Fields.RECITER_PHOTO + TEXT_TYPE + COMMA_SEP +
+                Fields.CATEGORY_DESC + TEXT_TYPE + COMMA_SEP +
+                Fields.PATH + TEXT_TYPE + COMMA_SEP +
+                Fields.DOWNLOADED_PATH + TEXT_TYPE + COMMA_SEP +
+                Fields.CONTENT + TEXT_TYPE + COMMA_SEP +
+                Fields.SURA_ID + NUMBER_TYPE + COMMA_SEP +
+                Fields.UP_VOTES + NUMBER_TYPE + COMMA_SEP +
+                Fields.VIEWCOUNTS + NUMBER_TYPE + COMMA_SEP +
+                Fields.AUTHOR_ID + NUMBER_TYPE + COMMA_SEP +
+                Fields.IS_DOWNLOADED + NUMBER_TYPE + COMMA_SEP +
+                Fields.IS_HISTORY + NUMBER_TYPE + COMMA_SEP +
+                Fields.CATEGORY_NAME + TEXT_TYPE + ")";
         db.execSQL(createSql);
     }
 
@@ -97,8 +80,6 @@ public class HistoryTable extends AbstractTable {
         return values;
     }
 
-
-
     public void insertDownLoadyModel(Entries item) {
 
         //  if(getHistoryByID(item.getId())==null)
@@ -106,65 +87,68 @@ public class HistoryTable extends AbstractTable {
                 .insert(getTableName(), null, getContentValues(item));
         //MemberNewsTable.getInstance().insertNewsItem( item);
     }
+
     public void insertHistoryModel(Entries item) {
 
-          if(getHistoryByID(item.getId())==null)
-        DatabaseManager.getInstance().getWritableDatabase()
-                .insert(getTableName(), null, getContentValues(item));
+        if (getHistoryByID(item.getId()) == null)
+            DatabaseManager.getInstance().getWritableDatabase()
+                    .insert(getTableName(), null, getContentValues(item));
         //MemberNewsTable.getInstance().insertNewsItem( item);
     }
-    public Entries getHistoryByID(int id){
-        Cursor cursor=DatabaseManager.getInstance().getWritableDatabase().query(getTableName(), getProjection()," is_History=1 and "+ Fields.SURA_ID+"="+id, null, null, null, null);
-        Entries model= null;
+
+    public Entries getHistoryByID(int id) {
+        Cursor cursor = DatabaseManager.getInstance().getWritableDatabase().query(getTableName(), getProjection(), " is_History=1 and " + Fields.SURA_ID + "=" + id, null, null, null, null);
+        Entries model = null;
         if (cursor.moveToFirst()) {
 
-            model=returnHistoryModel(cursor);
-        }
-        cursor.close();
-        return model;
-    }
-    public Entries getDownloadByID(int id){
-        Cursor cursor=DatabaseManager.getInstance().getWritableDatabase().query(getTableName(), getProjection()," is_Downloaded=1 and "+ Fields.SURA_ID+"="+id, null, null, null, null);
-        Entries model= null;
-        if (cursor.moveToFirst()) {
-
-            model=returnHistoryModel(cursor);
+            model = returnHistoryModel(cursor);
         }
         cursor.close();
         return model;
     }
 
-    public void updateDownloadItem(int id,String downloadPath){
+    public Entries getDownloadByID(int id) {
+        Cursor cursor = DatabaseManager.getInstance().getWritableDatabase().query(getTableName(), getProjection(), " is_Downloaded=1 and " + Fields.SURA_ID + "=" + id, null, null, null, null);
+        Entries model = null;
+        if (cursor.moveToFirst()) {
 
-        ContentValues cv=new ContentValues();
-        cv.put(Fields.SURA_ID,id);
-        cv.put(Fields.DOWNLOADED_PATH,downloadPath);
-        DatabaseManager.getInstance().getWritableDatabase().update(TABLE_NAME,cv, Fields.SURA_ID+"="+id +" and is_Downloaded=1  ",null);
+            model = returnHistoryModel(cursor);
+        }
+        cursor.close();
+        return model;
+    }
+
+    public void updateDownloadItem(int id, String downloadPath) {
+
+        ContentValues cv = new ContentValues();
+        cv.put(Fields.SURA_ID, id);
+        cv.put(Fields.DOWNLOADED_PATH, downloadPath);
+        DatabaseManager.getInstance().getWritableDatabase().update(TABLE_NAME, cv, Fields.SURA_ID + "=" + id + " and is_Downloaded=1  ", null);
 
     }
+
     private Entries returnHistoryModel(Cursor cursor) {
 
-        Entries GModel=null;
-        GModel=new Entries(cursor.getInt(cursor.getColumnIndex(Fields.SURA_ID)),cursor.getInt(cursor.getColumnIndex(Fields.AUTHOR_ID)),
-                cursor.getString(cursor.getColumnIndex(Fields.TITLE)) ,cursor.getString(cursor.getColumnIndex(Fields.CONTENT))  ,
-                cursor.getInt(cursor.getColumnIndex(Fields.VIEWCOUNTS)),cursor.getString(cursor.getColumnIndex(Fields.RECITER_NAME)),
+        Entries GModel = null;
+        GModel = new Entries(cursor.getInt(cursor.getColumnIndex(Fields.SURA_ID)), cursor.getInt(cursor.getColumnIndex(Fields.AUTHOR_ID)),
+                cursor.getString(cursor.getColumnIndex(Fields.TITLE)), cursor.getString(cursor.getColumnIndex(Fields.CONTENT)),
+                cursor.getInt(cursor.getColumnIndex(Fields.VIEWCOUNTS)), cursor.getString(cursor.getColumnIndex(Fields.RECITER_NAME)),
                 cursor.getString(cursor.getColumnIndex(Fields.RECITER_PHOTO)),
                 cursor.getString(cursor.getColumnIndex(Fields.CATEGORY_NAME)),
                 cursor.getString(cursor.getColumnIndex(Fields.CATEGORY_DESC)), cursor.getString(cursor.getColumnIndex(Fields.PATH)),
-                cursor.getInt(cursor.getColumnIndex(Fields.UP_VOTES)),cursor.getInt(cursor.getColumnIndex(Fields.UP_VOTES)),cursor.getInt(cursor.getColumnIndex(Fields.UP_VOTES)),
+                cursor.getInt(cursor.getColumnIndex(Fields.UP_VOTES)), cursor.getInt(cursor.getColumnIndex(Fields.UP_VOTES)), cursor.getInt(cursor.getColumnIndex(Fields.UP_VOTES)),
                 cursor.getString(cursor.getColumnIndex(Fields.DOWNLOADED_PATH)));
 
         return GModel;
     }
 
-    public ArrayList<Entries> GetHistoryList( )
-    {
-        Cursor cursor=DatabaseManager.getInstance().getWritableDatabase().query(getTableName(), getProjection(), " is_History=1", null, null, null, _ID +" DESC");
-        ArrayList<Entries> mList=new ArrayList<>();
+    public ArrayList<Entries> GetHistoryList() {
+        Cursor cursor = DatabaseManager.getInstance().getWritableDatabase().query(getTableName(), getProjection(), " is_History=1", null, null, null, _ID + " DESC");
+        ArrayList<Entries> mList = new ArrayList<>();
         if (cursor.moveToFirst()) {
             mList = new ArrayList<>(cursor.getCount());
             do {
-                Entries nModel=returnHistoryModel(cursor);
+                Entries nModel = returnHistoryModel(cursor);
 
                 mList.add(nModel);
 
@@ -174,15 +158,14 @@ public class HistoryTable extends AbstractTable {
         return mList;
     }
 
-    public ArrayList<Entries> GetDownloadedList( )
-    {
-        Cursor cursor=DatabaseManager.getInstance().
-                getWritableDatabase().query(getTableName(), getProjection(), " is_Downloaded=1 ", null, null, null,  "_id  DESC");
-        ArrayList<Entries> mList=new ArrayList<>();
+    public ArrayList<Entries> GetDownloadedList() {
+        Cursor cursor = DatabaseManager.getInstance().
+                getWritableDatabase().query(getTableName(), getProjection(), " is_Downloaded=1 ", null, null, null, "_id  DESC");
+        ArrayList<Entries> mList = new ArrayList<>();
         if (cursor.moveToFirst()) {
             mList = new ArrayList<>(cursor.getCount());
             do {
-                Entries nModel=returnHistoryModel(cursor);
+                Entries nModel = returnHistoryModel(cursor);
 
                 mList.add(nModel);
 
@@ -192,7 +175,7 @@ public class HistoryTable extends AbstractTable {
         return mList;
     }
 
-    public void deleteHistory(){
+    public void deleteHistory() {
 
         DatabaseManager.getInstance()
                 .getWritableDatabase().delete(getTableName(),
@@ -213,4 +196,23 @@ public class HistoryTable extends AbstractTable {
     protected String[] getProjection() {
         return projection;
     }
+
+    final static class Fields implements BaseColumns {
+        public static final String SURA_ID = "id";
+        public static final String TITLE = "client_address";
+        public static final String AUTHOR_ID = "author_id";
+        public static final String CONTENT = "content";
+        public static final String VIEWCOUNTS = "views_count";
+        public static final String RECITER_NAME = "reciter_name";
+        public static final String RECITER_PHOTO = "reciter_photo";
+        public static final String CATEGORY_NAME = "category_name";
+        public static final String CATEGORY_DESC = "category_desc";
+        public static final String PATH = "path";
+        public static final String UP_VOTES = "up_votes";
+        public static final String IS_HISTORY = "is_History";
+        public static final String IS_DOWNLOADED = "is_Downloaded";
+        public static final String DOWNLOADED_PATH = "downloaded_path";
+
+    }
+
 }

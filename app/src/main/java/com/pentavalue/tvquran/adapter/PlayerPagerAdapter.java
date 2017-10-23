@@ -68,6 +68,27 @@ public class PlayerPagerAdapter extends PagerAdapter {
     MediaPlayer mp;
     ProgressDialog bar;
     Handler mHandler;
+    private Runnable mUpdateTimeTask = new Runnable() {
+        @Override
+        public void run() {
+            long totalDuration = ((ParentActivity) mContext).getDuration();
+            long currentDuration = ((ParentActivity) mContext).getCurrentDuration();
+            // Displaying Total Duration time
+            totalTime.setText("" + TimeUtilities.milliSecondsToTimer(totalDuration));
+            // Displaying time completed playing
+            txtDuration.setText("" + TimeUtilities.milliSecondsToTimer(currentDuration));
+
+            // Updating progress bar
+            int progress = (int) (TimeUtilities.getProgressPercentage(currentDuration, totalDuration));
+            //Log.d("Progress", ""+progress);
+            playerSeekBar.setProgress(progress);
+
+            // Running this thread after 100 milliseconds
+            mHandler.postDelayed(this, 100);
+        }
+    };
+
+
 
     public PlayerPagerAdapter(ArrayList<Entries> mList, Context mContext) {
         this.mList = mList;
@@ -76,13 +97,10 @@ public class PlayerPagerAdapter extends PagerAdapter {
        // mp = new MediaPlayer();
     }
 
-
-
     @Override
     public int getCount() {
         return mList.size();
     }
-
 
     @Override
     public Object instantiateItem(ViewGroup container, final int position) {
@@ -127,7 +145,7 @@ public class PlayerPagerAdapter extends PagerAdapter {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
                 if (((ParentActivity)mContext).isRepeat()){
-                    ((ParentActivity)mContext).playSound(mList.get(position).getSoundPath());
+                    ((ParentActivity) mContext).playSound(mList.get(position).getSoundPath(), mList.get(position));
                 }
             }
         });
@@ -207,26 +225,6 @@ public class PlayerPagerAdapter extends PagerAdapter {
         //  super.destroyItem(container, position, object);
         ((ViewPager) container).removeView((View) object);
     }
-
-    private Runnable mUpdateTimeTask=new Runnable() {
-        @Override
-        public void run() {
-            long totalDuration = ((ParentActivity)mContext).getDuration();
-            long currentDuration = ((ParentActivity)mContext).getCurrentDuration();
-            // Displaying Total Duration time
-            totalTime.setText(""+ TimeUtilities.milliSecondsToTimer(totalDuration));
-            // Displaying time completed playing
-            txtDuration.setText(""+TimeUtilities.milliSecondsToTimer(currentDuration));
-
-            // Updating progress bar
-            int progress = (int)(TimeUtilities.getProgressPercentage(currentDuration, totalDuration));
-            //Log.d("Progress", ""+progress);
-            playerSeekBar.setProgress(progress);
-
-            // Running this thread after 100 milliseconds
-            mHandler.postDelayed(this, 100);
-        }
-    };
 
     @Override
     public int getItemPosition(Object object) {

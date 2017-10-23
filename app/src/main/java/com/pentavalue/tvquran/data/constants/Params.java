@@ -12,6 +12,34 @@ public abstract class Params {
     public static final String LANGUAGE = "lang";
     public static final String IMAGE = "http://images.boomsbeat.com/data/images/full/19640/game-of-thrones-season-4-jpg.jpg";
 
+    public interface INTENT_PARAMS {
+        public static final String INTENT_KEY_PROGRESS = "intent_key_progress";
+        public static final String INTENT_KEY_MODEL = "intent_key_model";
+        public static final String INTENT_KEY_POSITION = "intent_key_position";
+
+
+        /*public static final String INTENT_KEY_ = "";
+        public static final String INTENT_KEY_ = "";
+        public static final String INTENT_KEY_ = "";*/
+
+    }
+
+    public interface ACTIONS {
+        public static final String ACTION_PLAY = "action_play";
+        public static final String ACTION_PAUSE = "action_pause";
+        public static final String ACTION_REWIND = "action_rewind";
+        public static final String ACTION_FAST_FORWARD = "action_fast_foward";
+        public static final String ACTION_NEXT = "action_next";
+        public static final String ACTION_PREVIOUS = "action_previous";
+        public static final String ACTION_STOP = "action_stop";
+        public static final String STARTFOREGROUND_ACTION = "startforeground";
+        public static final String STOPFOREGROUND_ACTION = "stopforeground";
+    }
+
+    public interface NOTIFICATION_ID {
+        public static int FOREGROUND_SERVICE = 101;
+    }
+
     public static final class Registration {
         public static final String ADDRESS_ID = "Id";
         public static final String FIRST_NAME = "FirstName";
@@ -110,6 +138,8 @@ public abstract class Params {
     public static final class ShoppingCart {
         public static final int ShoppingCart = 112233;
     }
+
+
     /**
      * @Http Status Code
      *

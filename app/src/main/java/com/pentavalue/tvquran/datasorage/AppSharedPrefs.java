@@ -22,31 +22,28 @@ public class AppSharedPrefs {
     /**
      * function to clear all data
      */
-    public static void ClearSherdPrefs()
-    {
+    public static void ClearSherdPrefs() {
 
         getSharedPreferences().edit().clear().commit();
     }
 
 
-    public static void saveStringPrefs(String key,String val)
-    {
-        getSharedPreferences().edit().putString(key,val).commit();
+    public static void saveStringPrefs(String key, String val) {
+        getSharedPreferences().edit().putString(key, val).commit();
     }
 
-    public static String getStringVal(String key)
-    {
-        return getSharedPreferences().getString(key,"");
-    }
-    public static void saveBooleanPrefs(String key,boolean val){
-        getSharedPreferences().edit().putBoolean(key,val).commit();
-
-    }
-    public static boolean getBooleanVal(String key)
-    {
-        return getSharedPreferences().getBoolean(key,false);
+    public static String getStringVal(String key) {
+        return getSharedPreferences().getString(key, "");
     }
 
+    public static void saveBooleanPrefs(String key, boolean val) {
+        getSharedPreferences().edit().putBoolean(key, val).commit();
+
+    }
+
+    public static boolean getBooleanVal(String key) {
+        return getSharedPreferences().getBoolean(key, false);
+    }
 
 
 }
