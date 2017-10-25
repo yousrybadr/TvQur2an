@@ -201,7 +201,6 @@ public class RecitersMangers extends BusinessManager<Reciters> {
         try {
             obj.put("reciter_id", id);
             obj.put("locale", AppSharedPrefs.getStringVal(PrefsConstant.LANG));
-
         } catch (JSONException e) {
             e.printStackTrace();
         }

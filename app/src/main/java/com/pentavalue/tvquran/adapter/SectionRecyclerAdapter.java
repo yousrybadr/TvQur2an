@@ -28,15 +28,16 @@ import butterknife.ButterKnife;
 public class SectionRecyclerAdapter extends SectionRecyclerViewAdapter<SectionHeader, Entries, SectionRecyclerAdapter.SectionViewHolder, SectionRecyclerAdapter.ChildViewHolder> {
 
     Context context;
-    HashMap ratePerQuestion= new HashMap();
+    HashMap ratePerQuestion = new HashMap();
     SharedPreferences pref;
     List<SectionHeader> sectionHeaderItemList;
+
     public SectionRecyclerAdapter(Context context, List<SectionHeader> sectionHeaderItemList) {
 
 
         super(context, sectionHeaderItemList);
         this.context = context;
-        this.sectionHeaderItemList=sectionHeaderItemList;
+        this.sectionHeaderItemList = sectionHeaderItemList;
     }
 
     @Override
@@ -53,16 +54,17 @@ public class SectionRecyclerAdapter extends SectionRecyclerViewAdapter<SectionHe
 
     @Override
     public void onBindSectionViewHolder(SectionViewHolder sectionViewHolder, int sectionPosition, SectionHeader sectionHeader) {
-       sectionViewHolder.readingType.setText(sectionHeader.getSectionText());
-       sectionViewHolder.numOfSorahSection.setText(sectionHeader.getNumOFSorah()+"");
+        sectionViewHolder.readingType.setText(sectionHeader.getSectionText());
+        sectionViewHolder.numOfSorahSection.setText(sectionHeader.getNumOFSorah() + "");
     }
+
     @Override
     public void onBindChildViewHolder(final ChildViewHolder childViewHolder, final int sectionPosition, final int childPosition, final Entries child) {
 
-        final ArrayList<Entries> childList= (ArrayList<Entries>) sectionHeaderItemList.get(sectionPosition).getChildItems();
-        childViewHolder.numOfSorahChild.setText(childPosition+1+"");
-        childViewHolder.numOfLikes.setText(child.getViews_count()+"");
-        childViewHolder.numOfListen.setText(child.getViews_count()+"");
+        final ArrayList<Entries> childList = (ArrayList<Entries>) sectionHeaderItemList.get(sectionPosition).getChildItems();
+        childViewHolder.numOfSorahChild.setText(childPosition + 1 + "");
+        childViewHolder.numOfLikes.setText(child.getViews_count() + "");
+        childViewHolder.numOfListen.setText(child.getViews_count() + "");
         childViewHolder.sorahName.setText(child.getTitle());
         childViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,15 +74,16 @@ public class SectionRecyclerAdapter extends SectionRecyclerViewAdapter<SectionHe
                 increaseVote(child.perantNode,child.childNode);
                 descreaseVote();*/
              /*  itemclickListner.onClickInter(sectionPosition, childPosition, child, childViewHolder);*/
-                ((ParentActivity)context).showPlayerAndPlaySound(childList,childPosition);
+                ((ParentActivity) context).showPlayerAndPlaySound(childList, childPosition, 1);
             }
         });
     }
+
     public static class SectionViewHolder extends RecyclerView.ViewHolder {
-      @Bind(R.id.readingType)
-      TextView readingType;
-      @Bind(R.id.numOfSorahSection)
-      TextView numOfSorahSection;
+        @Bind(R.id.readingType)
+        TextView readingType;
+        @Bind(R.id.numOfSorahSection)
+        TextView numOfSorahSection;
 
         public SectionViewHolder(View itemView) {
             super(itemView);
@@ -90,14 +93,15 @@ public class SectionRecyclerAdapter extends SectionRecyclerViewAdapter<SectionHe
 
 
     public static class ChildViewHolder extends RecyclerView.ViewHolder {
-       @Bind(R.id.numOfSorah)
-       TextView numOfSorahChild;
-       @Bind(R.id.sorahNameChild)
-       TextView sorahName;
+        @Bind(R.id.numOfSorah)
+        TextView numOfSorahChild;
+        @Bind(R.id.sorahNameChild)
+        TextView sorahName;
         @Bind(R.id.numOfListen)
         TextView numOfListen;
         @Bind(R.id.numOfLikes)
         TextView numOfLikes;
+
         public ChildViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);

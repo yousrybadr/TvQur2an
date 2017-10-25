@@ -39,18 +39,17 @@ public class FirstFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    public static ArrayList<Entries> dataList;
     @Bind(R.id.recyclerView)
     RecyclerView recyclerView;
     @Bind(R.id.recyclerViewSorted)
     RecyclerView recyclerViewSorted;
     @Bind(R.id.typeTxt)
     TextView typeTxt;
-    public static ArrayList<Entries> dataList;
     OnReaderClick onReaderClick;
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
 
     public FirstFragment() {
         // Required empty public constructor
@@ -87,9 +86,9 @@ public class FirstFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v=inflater.inflate(R.layout.fragment_first, container, false);
-        ButterKnife.bind(this,v);
-        return  v;
+        View v = inflater.inflate(R.layout.fragment_first, container, false);
+        ButterKnife.bind(this, v);
+        return v;
     }
 
 
@@ -107,18 +106,16 @@ public class FirstFragment extends Fragment {
             @Override
             public void onSuccess(Home obj) {
                 typeTxt.setText(obj.getSorted());
-                List<Reciters> reciterses=obj.getReciterses();
-                List<Entries>entries=obj.getEntries();
-                setupRecyclerView(recyclerView,reciterses);
-                List<Entries>entriesById=new ArrayList<>();
-                for(int i=0;i<entries.size();i++)
-                {
-                    if(reciterses.get(1).getId()==entries.get(i).getAuthor_id())
-                    {
+                List<Reciters> reciterses = obj.getReciterses();
+                List<Entries> entries = obj.getEntries();
+                setupRecyclerView(recyclerView, reciterses);
+                List<Entries> entriesById = new ArrayList<>();
+                for (int i = 0; i < entries.size(); i++) {
+                    if (reciterses.get(1).getId() == entries.get(i).getAuthor_id()) {
                         entriesById.add(entries.get(i));
                     }
                 }
-                setupRecyclerViewSorted(recyclerViewSorted,entries);
+                setupRecyclerViewSorted(recyclerViewSorted, entries);
             }
 
             @Override
@@ -129,30 +126,33 @@ public class FirstFragment extends Fragment {
     }
 
     private void setupRecyclerView(RecyclerView recyclerView, List<Reciters> list) {
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL,false));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         setListItems(recyclerView, list);
 
     }
+
     private void setupRecyclerViewSorted(RecyclerView recyclerView, List<Entries> list) {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         setListItemsSorted(recyclerView, list);
 
     }
+
     private void setListItems(RecyclerView recyclerView, List<Reciters> list) {
         if (!ValidatorUtils.isEmpty(list)) {
-            RecitersAdapter adapter = new RecitersAdapter(getActivity(), list,onReaderClick);
+            RecitersAdapter adapter = new RecitersAdapter(getActivity(), list, onReaderClick);
             recyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
         }
     }
+
     private void setListItemsSorted(RecyclerView recyclerView, List<Entries> list) {
         if (!ValidatorUtils.isEmpty(list)) {
-            dataList= (ArrayList<Entries>) list;
+            dataList = (ArrayList<Entries>) list;
             SortedSorahAdapter adapter = new SortedSorahAdapter(getActivity(), list, new OnAudioPlayListener() {
                 @Override
                 public void OnPlayTrack(int Postion, Entries entries) {
                     //((ParentActivity)getActivity()).playSound(entries.getSoundPath(),entries.getTitle(),entries.getReciter_name(),false);
-                    ((ParentActivity)getActivity()).showPlayerAndPlaySound(dataList,Postion);
+                    ((ParentActivity) getActivity()).showPlayerAndPlaySound(dataList, Postion, 1);
                 }
 
                 @Override

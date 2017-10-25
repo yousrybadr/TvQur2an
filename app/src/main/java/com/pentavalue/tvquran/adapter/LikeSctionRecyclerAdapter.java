@@ -84,11 +84,11 @@ public class LikeSctionRecyclerAdapter extends SectionRecyclerViewAdapter<Header
         if (sectionPosition == 0) {
             childViewHolder.downloadprogress.setVisibility(View.GONE);
 
-        } else if (sectionPosition == 1 ){
-            if( DownloadService.isDownloading  ) {
-                if (childPosition==0){
+        } else if (sectionPosition == 1) {
+            if (DownloadService.isDownloading) {
+                if (childPosition == 0) {
                     childViewHolder.downloadprogress.setVisibility(View.VISIBLE);
-                  //  childViewHolder.downloadprogress.setProgress(0);
+                    //  childViewHolder.downloadprogress.setProgress(0);
                     ApplicationController.getInstance().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -97,9 +97,8 @@ public class LikeSctionRecyclerAdapter extends SectionRecyclerViewAdapter<Header
                             notifyDataSetChanged();
                         }
                     });
-                }
-                else {
-                    childViewHolder.downloadprogress.setVisibility(View.GONE );
+                } else {
+                    childViewHolder.downloadprogress.setVisibility(View.GONE);
 
                 }
 
@@ -113,7 +112,7 @@ public class LikeSctionRecyclerAdapter extends SectionRecyclerViewAdapter<Header
                 // Toast.makeText(context,"click on position "+childPosition,Toast.LENGTH_SHORT).show();
                 if (sectionItemList.get(sectionPosition).getTempdList().get(childPosition).getSoundPath() != null ||
                         !sectionItemList.get(sectionPosition).getTempdList().get(childPosition).getSoundPath().equals(""))
-                    ((ParentActivity) context).showPlayerAndPlaySound(sectionItemList.get(sectionPosition).getTempdList(), childPosition); //+1 cause header
+                    ((ParentActivity) context).showPlayerAndPlaySound(sectionItemList.get(sectionPosition).getTempdList(), childPosition, 1); //+1 cause header
 
             }
         });

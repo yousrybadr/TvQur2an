@@ -27,19 +27,20 @@ import butterknife.ButterKnife;
  * Created by Passant on 7/13/2017.
  */
 
-public class SearchResultSctionRecyclerAdapter extends SectionRecyclerViewAdapter<HeaderModel,Entries,
-        SearchResultSctionRecyclerAdapter.SectionViewHolder,SearchResultSctionRecyclerAdapter.ChildViewHolder> {
+public class SearchResultSctionRecyclerAdapter extends SectionRecyclerViewAdapter<HeaderModel, Entries,
+        SearchResultSctionRecyclerAdapter.SectionViewHolder, SearchResultSctionRecyclerAdapter.ChildViewHolder> {
 
 
+    private static final int TYPE_FOOTER = 2;
+    private static final int TYPE_ITEM = 1;
     Context context;
     List<HeaderModel> sectionItemList;
     int secPosition;
-    private static final int TYPE_FOOTER = 2;
-    private static final int TYPE_ITEM = 1;
+
     public SearchResultSctionRecyclerAdapter(Context context, List<HeaderModel> sectionItemList) {
         super(context, sectionItemList);
         this.context = context;
-        this.sectionItemList=sectionItemList;
+        this.sectionItemList = sectionItemList;
     }
 
     @Override
@@ -47,7 +48,7 @@ public class SearchResultSctionRecyclerAdapter extends SectionRecyclerViewAdapte
 
         View view = LayoutInflater.from(context).inflate(R.layout.section_header, sectionViewGroup, false);
         return new SectionViewHolder(view);
-     }
+    }
 
     @Override
     public ChildViewHolder onCreateChildViewHolder(ViewGroup childViewGroup, int viewType) {
@@ -58,13 +59,13 @@ public class SearchResultSctionRecyclerAdapter extends SectionRecyclerViewAdapte
     }
 
     @Override
-    public void onBindSectionViewHolder(SectionViewHolder sectionViewHolder, int i,final HeaderModel headerModel) {
+    public void onBindSectionViewHolder(SectionViewHolder sectionViewHolder, int i, final HeaderModel headerModel) {
         sectionViewHolder.readingType.setText(headerModel.getTitle());
-         sectionViewHolder.numOfSorahSection.setText(headerModel.getTotalCount()+"");
+        sectionViewHolder.numOfSorahSection.setText(headerModel.getTotalCount() + "");
         sectionViewHolder.numOfSorahSection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((ParentActivity)context).replaceFragment(DisplayCompleteListFragment.newInstance(headerModel.getChildList()),false,false);
+                ((ParentActivity) context).replaceFragment(DisplayCompleteListFragment.newInstance(headerModel.getChildList()), false, false);
             }
         });
     }
@@ -77,25 +78,28 @@ public class SearchResultSctionRecyclerAdapter extends SectionRecyclerViewAdapte
                 .placeholder(R.drawable.emosad)
                 .error(R.drawable.emosad)
                 .into(holder.profile_image);*/
-       secPosition=sectionPosition;
+        secPosition = sectionPosition;
         childViewHolder.sorahName.setText(entries.getTitle());
         childViewHolder.sorahDesc.setText(entries.getCategory_desc());
-        childViewHolder.numOfLikes.setText(entries.getUpVotes()+"");
-        childViewHolder.numOfListen.setText(entries.getViews_count()+"");
-        if (DownloadService.isDownloading && entries.getIsHistory()!=1)
-            childViewHolder. downloadprogress.setVisibility(View.VISIBLE);
+        childViewHolder.numOfLikes.setText(entries.getUpVotes() + "");
+        childViewHolder.numOfListen.setText(entries.getViews_count() + "");
+        if (DownloadService.isDownloading && entries.getIsHistory() != 1)
+            childViewHolder.downloadprogress.setVisibility(View.VISIBLE);
         childViewHolder.itemLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               // Toast.makeText(context,"click on position "+childPosition,Toast.LENGTH_SHORT).show();
-                if (sectionItemList.get(sectionPosition).getTempdList().get(childPosition).getSoundPath() !=null ||
-                        ! sectionItemList.get(sectionPosition).getTempdList().get(childPosition).getSoundPath().equals(""))
-                ((ParentActivity)context).showPlayerAndPlaySound(sectionItemList.get(sectionPosition).getTempdList(),childPosition ); //+1 cause header
+                // Toast.makeText(context,"click on position "+childPosition,Toast.LENGTH_SHORT).show();
+                if (sectionItemList.get(sectionPosition).getTempdList().get(childPosition).getSoundPath() != null ||
+                        !sectionItemList.get(sectionPosition).getTempdList().get(childPosition).getSoundPath().equals(""))
+                    ((ParentActivity) context).showPlayerAndPlaySound(sectionItemList.get(sectionPosition).getTempdList(), childPosition, 1); //+1 cause header
 
             }
         });
     }
 
+    private boolean isPositionFooter(int position) {
+        return position == sectionItemList.get(secPosition).getTempdList().size() + 1;
+    }
 
     public static class SectionViewHolder extends RecyclerView.ViewHolder {
         @Bind(R.id.readingType)
@@ -109,7 +113,6 @@ public class SearchResultSctionRecyclerAdapter extends SectionRecyclerViewAdapte
         }
     }
 
-
     public static class ChildViewHolder extends RecyclerView.ViewHolder {
         @Bind(R.id.rectirsName)
         TextView rectirsName;
@@ -118,7 +121,7 @@ public class SearchResultSctionRecyclerAdapter extends SectionRecyclerViewAdapte
         @Bind(R.id.sorahName)
         TextView sorahName;
         @Bind(R.id.sorahDesc)
-        TextView sorahDesc ;
+        TextView sorahDesc;
         @Bind(R.id.numOfListen)
         TextView numOfListen;
         @Bind(R.id.numOfLikes)
@@ -127,14 +130,11 @@ public class SearchResultSctionRecyclerAdapter extends SectionRecyclerViewAdapte
         ProgressBar downloadprogress;
         @Bind(R.id.itemLayout)
         LinearLayout itemLayout;
+
         public ChildViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
-    }
-
-    private boolean isPositionFooter (int position) {
-        return position == sectionItemList.get(secPosition).getTempdList().size () + 1;
     }
 
    /* @Override

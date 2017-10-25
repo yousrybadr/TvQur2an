@@ -55,32 +55,29 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
-  * to handle interaction events.
+ * to handle interaction events.
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends BaseFragment implements View.OnClickListener,OnReaderClick ,OnAudioPlayListener{
-OnReaderClick onReaderClick;
-
+public class HomeFragment extends BaseFragment implements View.OnClickListener, OnReaderClick, OnAudioPlayListener {
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+    public static ArrayList<Entries> dataList;
+    OnReaderClick onReaderClick;
     @Bind(R.id.recyclerView)
     RecyclerView recyclerView;
     @Bind(R.id.recyclerViewSorted)
     RecyclerView recyclerViewSorted;
     @Bind(R.id.typeTxt)
     TextView typeTxt;
-
     Dialog dialog;
     ImageView rightImg;
-    List<Reciters> list=new ArrayList<>();
-    int id=1;
+    List<Reciters> list = new ArrayList<>();
+    int id = 1;
     FrameLayout outPlayer;
     OnAudioPlayListener onAudioPlayListener;
-    public static ArrayList<Entries> dataList;
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -89,14 +86,16 @@ OnReaderClick onReaderClick;
     public HomeFragment() {
         // Required empty public constructor
     }
+
     public static HomeFragment newInstance() {
         HomeFragment fragment = new HomeFragment();
         return fragment;
     }
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-
+     *
      * @return A new instance of fragment HomeFragment.
      */
 
@@ -104,25 +103,26 @@ OnReaderClick onReaderClick;
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView= inflater.inflate(R.layout.fragment_home, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
 
-      //  ((ParentActivity)getActivity()).checkConnection();
-        onReaderClick=this;
-       // outPlayer=((PerantActivity)getActivity()).getPlayerOutLayout();
-        onAudioPlayListener=this;
+        //  ((ParentActivity)getActivity()).checkConnection();
+        onReaderClick = this;
+        // outPlayer=((PerantActivity)getActivity()).getPlayerOutLayout();
+        onAudioPlayListener = this;
         init(rootView);
-       // if (ParentActivity.isConnected){
-           rightImg=((ParentActivity)getActivity()).getRightImg();
-           //rightImg.setVisibility(View.VISIBLE);
-            performBrowsHome(id);
-            rightImg.setOnClickListener(this);
+        // if (ParentActivity.isConnected){
+        rightImg = ((ParentActivity) getActivity()).getRightImg();
+        //rightImg.setVisibility(View.VISIBLE);
+        performBrowsHome(id);
+        rightImg.setOnClickListener(this);
 
 
        /* }
@@ -138,14 +138,15 @@ OnReaderClick onReaderClick;
     @Override
     public void onPause() {
         super.onPause();
-       // RecitersMangers.getInstance(getActivity()).removeListener(this);
-      //  ButterKnife.unbind(this);
+        // RecitersMangers.getInstance(getActivity()).removeListener(this);
+        //  ButterKnife.unbind(this);
     }
+
     @Override
     public void onResume() {
         super.onResume();
-        ((ParentActivity)getActivity()).setTitleTxt(getString(R.string.home));
-     //   ((ParentActivity)getActivity()).hideFilter(false);
+        ((ParentActivity) getActivity()).setTitleTxt(getString(R.string.home));
+        //   ((ParentActivity)getActivity()).hideFilter(false);
         //outPlayer=((ParentActivity)getActivity()).getPlayerOutLayout();
       /*  RecitersMangers.getInstance(getActivity()).addListener(this);
         RecitersMangers.getInstance(getActivity()).performBrowseHome(id);*/
@@ -154,7 +155,7 @@ OnReaderClick onReaderClick;
     private void performBrowsHome(int id) {
 
         showLoadingDialog();
-        JSONObject json=new JSONObject();
+        JSONObject json = new JSONObject();
         try {
             json.put("sort", id);
             json.put("locale", AppSharedPrefs.getStringVal(PrefsConstant.LANG));
@@ -163,7 +164,7 @@ OnReaderClick onReaderClick;
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        JsonObjectRequest req=new JsonObjectRequest(Request.Method.POST, NetworkConstants.HOME_URL, json, new Response.Listener<JSONObject>() {
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, NetworkConstants.HOME_URL, json, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 BaseResponse baseResponse = null;
@@ -176,19 +177,17 @@ OnReaderClick onReaderClick;
                         //List<Reciters> list = handleObjectListServerResponseReciters(baseResponse, Reciters.class);
                         // List<Entries> list2 = handleObjectListServerResponseEntries(baseResponse, Entries.class);
                         typeTxt.setText(reciters.getSorted());
-                        Log.i("SORT",reciters.getSorted());
-                        List<Reciters>reciterses=reciters.getReciterses();
-                        List<Entries>entries=reciters.getEntries();
-                        setupRecyclerView(recyclerView,reciterses);
-                        List<Entries>entriesById=new ArrayList<>();
-                        for(int i=0;i<entries.size();i++)
-                        {
-                            if(reciterses.get(1).getId()==entries.get(i).getAuthor_id())
-                            {
+                        Log.i("SORT", reciters.getSorted());
+                        List<Reciters> reciterses = reciters.getReciterses();
+                        List<Entries> entries = reciters.getEntries();
+                        setupRecyclerView(recyclerView, reciterses);
+                        List<Entries> entriesById = new ArrayList<>();
+                        for (int i = 0; i < entries.size(); i++) {
+                            if (reciterses.get(1).getId() == entries.get(i).getAuthor_id()) {
                                 entriesById.add(entries.get(i));
                             }
                         }
-                        setupRecyclerViewSorted(recyclerViewSorted,entries);
+                        setupRecyclerViewSorted(recyclerViewSorted, entries);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -214,45 +213,49 @@ OnReaderClick onReaderClick;
         //outPlayer.setOnClickListener(this);
 
     }
+
     private void setupRecyclerView(RecyclerView recyclerView, List<Reciters> list) {
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL,false));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         setListItems(recyclerView, list);
 
     }
+
     private void setupRecyclerViewSorted(RecyclerView recyclerView, List<Entries> list) {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         setListItemsSorted(recyclerView, list);
 
     }
+
     private void setListItems(RecyclerView recyclerView, List<Reciters> list) {
         if (!ValidatorUtils.isEmpty(list)) {
-            RecitersAdapter adapter = new RecitersAdapter(getActivity(), list,onReaderClick);
+            RecitersAdapter adapter = new RecitersAdapter(getActivity(), list, onReaderClick);
             recyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
         }
     }
+
     private void setListItemsSorted(RecyclerView recyclerView, List<Entries> list) {
         if (!ValidatorUtils.isEmpty(list)) {
-            dataList= (ArrayList<Entries>) list;
+            dataList = (ArrayList<Entries>) list;
             SortedSorahAdapter adapter = new SortedSorahAdapter(getActivity(), list, new OnAudioPlayListener() {
                 @Override
                 public void OnPlayTrack(int Postion, Entries entries) {
-            //((ParentActivity)getActivity()).playSound(entries.getSoundPath(),entries.getTitle(),entries.getReciter_name(),false);
-                   // ((ParentActivity)getActivity()).showPrepearDialog();
-                    ((ParentActivity)getActivity()).showPlayerAndPlaySound(dataList,Postion);
+                    //((ParentActivity)getActivity()).playSound(entries.getSoundPath(),entries.getTitle(),entries.getReciter_name(),false);
+                    // ((ParentActivity)getActivity()).showPrepearDialog();
+                    ((ParentActivity) getActivity()).showPlayerAndPlaySound(dataList, Postion, 1);
                 }
 
                 @Override
                 public void OnPlayTrack(int Postion, ArrayList<Entries> entries) {
-                    ((ParentActivity)getActivity()).showPlayerAndPlaySound(dataList,Postion);
+                    ((ParentActivity) getActivity()).showPlayerAndPlaySound(dataList, Postion, 1);
 
                 }
             });
             recyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
-            if (AppSharedPrefs.getBooleanVal(PrefsConstant.AUTO_PLAY)){
-                if (dataList!=null &&dataList.size()>0)
-                ((ParentActivity)getActivity()).showPlayerAndPlaySound(dataList,0);
+            if (AppSharedPrefs.getBooleanVal(PrefsConstant.AUTO_PLAY)) {
+                if (dataList != null && dataList.size() > 0)
+                    ((ParentActivity) getActivity()).showPlayerAndPlaySound(dataList, 0, 1);
 
             }
         }
@@ -263,9 +266,9 @@ OnReaderClick onReaderClick;
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.rightImg:
-               openDialog();
-               // showLoadingDialog();
-               // RecitersMangers.getInstance(getActivity()).performBrowseHome(id);
+                openDialog();
+                // showLoadingDialog();
+                // RecitersMangers.getInstance(getActivity()).performBrowseHome(id);
 
                 break;
             /*case R.id.playerOut:
@@ -275,12 +278,13 @@ OnReaderClick onReaderClick;
 
     }
 
+
     public void openDialog() {
 
         dialog = new Dialog(getActivity());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_catogry);
-       // dialog.setTitle(getString(R.string.title_filter));
+        // dialog.setTitle(getString(R.string.title_filter));
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         dialog.setCancelable(true);
         RadioGroup radioGB = (RadioGroup) dialog.findViewById(R.id.radioGB);
@@ -313,7 +317,7 @@ OnReaderClick onReaderClick;
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (dialog.isShowing() && dialog!=null)
+                if (dialog.isShowing() && dialog != null)
                     dialog.dismiss();
             }
         });
@@ -322,10 +326,11 @@ OnReaderClick onReaderClick;
 
         dialog.show();
         // Toast.makeText(this,id+"",Toast.LENGTH_SHORT).show();
-      //  return id;
+        //  return id;
     }
+
     private void openPlayer() {
-       Intent i=new Intent(getActivity(), PlayerActivity.class);
+        Intent i = new Intent(getActivity(), PlayerActivity.class);
         startActivity(i);
     }
 
@@ -362,7 +367,7 @@ OnReaderClick onReaderClick;
         Bundle bundle = new Bundle();
         bundle.putInt("reciter_id", reciters.getId());
         fragment.setArguments(bundle);*/
-        ((ParentActivity)getActivity()).replaceFragment(ReaderProfileFragment.newInstance(reciters.getId()),false,false);
+        ((ParentActivity) getActivity()).replaceFragment(ReaderProfileFragment.newInstance(reciters.getId()), false, false);
     }
 
     @Override

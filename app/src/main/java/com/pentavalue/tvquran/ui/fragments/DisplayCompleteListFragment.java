@@ -28,13 +28,11 @@ public class DisplayCompleteListFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    RecyclerView displayRV;
     // TODO: Rename and change types of parameters
     private ArrayList<Entries> mParam1;
     private String mParam2;
 
-
-    RecyclerView displayRV;
     public DisplayCompleteListFragment() {
         // Required empty public constructor
     }
@@ -51,7 +49,7 @@ public class DisplayCompleteListFragment extends Fragment {
         DisplayCompleteListFragment fragment = new DisplayCompleteListFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_PARAM1, param1);
-       // args.putString(ARG_PARAM2, param2);
+        // args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -61,7 +59,7 @@ public class DisplayCompleteListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = (ArrayList<Entries>) getArguments().getSerializable(ARG_PARAM1);
-           // mParam2 = getArguments().getString(ARG_PARAM2);
+            // mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -69,8 +67,8 @@ public class DisplayCompleteListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v=inflater.inflate(R.layout.fragment_display_complete_list, container, false);
-        displayRV=(RecyclerView) v.findViewById(R.id.displayRV);
+        View v = inflater.inflate(R.layout.fragment_display_complete_list, container, false);
+        displayRV = (RecyclerView) v.findViewById(R.id.displayRV);
         displayRV.setLayoutManager(new LinearLayoutManager(getActivity()));
         return v;
     }
@@ -81,13 +79,13 @@ public class DisplayCompleteListFragment extends Fragment {
         displayRV.setAdapter(new SortedSorahAdapter(getActivity(), mParam1, new OnAudioPlayListener() {
             @Override
             public void OnPlayTrack(int Postion, Entries entries) {
-               // ((ParentActivity)getActivity()).showPlayerAndPlaySound(mParam1,Postion);
+                // ((ParentActivity)getActivity()).showPlayerAndPlaySound(mParam1,Postion);
 
             }
 
             @Override
             public void OnPlayTrack(int Postion, ArrayList<Entries> entries) {
-                ((ParentActivity)getActivity()).showPlayerAndPlaySound(mParam1,Postion);
+                ((ParentActivity) getActivity()).showPlayerAndPlaySound(mParam1, Postion, 1);
             }
         }));
     }

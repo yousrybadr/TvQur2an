@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.Rating;
@@ -17,11 +18,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.pentavalue.tvquran.R;
 import com.pentavalue.tvquran.data.constants.Params;
 import com.pentavalue.tvquran.datasorage.database.HistoryTable;
 import com.pentavalue.tvquran.model.Entries;
+import com.pentavalue.tvquran.ui.activities.ParentActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,6 +39,7 @@ public class NotificationService extends Service implements MediaPlayer.OnComple
 
     private static final String TAG = NotificationService.class.getSimpleName();
     private static MediaPlayer mMediaPlayer;
+    private static int postion = -1;
     /**
      * indicates whether onRebind should be used
      */
@@ -48,13 +52,11 @@ public class NotificationService extends Service implements MediaPlayer.OnComple
      * interface for clients that bind
      */
     IBinder mBinder;
+    boolean playFromNotification = false;
     private MediaSessionManager mManager;
     private MediaSession mSession;
     private MediaController mController;
-
     private List<Entries> mList = new ArrayList<>();
-
-    private int postion = -1;
     private int progress = 0;
     private Entries model;
 
@@ -67,19 +69,23 @@ public class NotificationService extends Service implements MediaPlayer.OnComple
         Log.v(TAG, "Done");
         mList = HistoryTable.getInstance().GetHistoryList();
 
-        if (intent.hasExtra(Params.INTENT_PARAMS.INTENT_KEY_POSITION)) {
+        if (intent == null) {
+            return Service.START_NOT_STICKY;
+        }
+        try {
+            if (intent.getBooleanExtra(Params.INTENT_PARAMS.INTENT_KEY_STOP, false)) {
+                if (mMediaPlayer != null) {
+                    mController.getTransportControls().stop();
+                }
 
-            postion = intent.getIntExtra(Params.INTENT_PARAMS.INTENT_KEY_POSITION, 0);
-            model = (Entries) intent.getSerializableExtra(Params.INTENT_PARAMS.INTENT_KEY_MODEL);
-            progress = intent.getIntExtra(Params.INTENT_PARAMS.INTENT_KEY_PROGRESS, 0);
-
+            }
+        } catch (RuntimeException ex) {
+            //Log.e(TAG, ex.getMessage());
+            ex.printStackTrace();
         }
 
 
-        if (mManager == null) {
-
-            initMediaSessions(model);
-        }
+        initMediaSessions();
         handleIntent(intent);
         return START_STICKY;
     }
@@ -92,8 +98,7 @@ public class NotificationService extends Service implements MediaPlayer.OnComple
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mMediaPlayer.stop();
-        mMediaPlayer.release();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mSession.release();
         }
@@ -132,6 +137,19 @@ public class NotificationService extends Service implements MediaPlayer.OnComple
         String action = intent.getAction();
 
         if (action.equalsIgnoreCase(Params.ACTIONS.ACTION_PLAY)) {
+            if (intent.hasExtra(Params.INTENT_PARAMS.INTENT_KEY_POSITION)) {
+
+                postion = intent.getIntExtra(Params.INTENT_PARAMS.INTENT_KEY_POSITION, 0);
+                model = (Entries) intent.getSerializableExtra(Params.INTENT_PARAMS.INTENT_KEY_MODEL);
+                progress = intent.getIntExtra(Params.INTENT_PARAMS.INTENT_KEY_PROGRESS, 0);
+
+            }
+            if (mMediaPlayer == null) {
+
+                initMediaPlayer(model);
+            }
+
+
             Log.v(TAG, "onAction Play");
             mController.getTransportControls().play();
         } else if (action.equalsIgnoreCase(Params.ACTIONS.ACTION_PAUSE)) {
@@ -155,26 +173,35 @@ public class NotificationService extends Service implements MediaPlayer.OnComple
         }
     }
 
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void buildNotification(Notification.Action action, @NonNull Entries model) {
+    private void buildNotification(Notification.Action action, @NonNull Entries model, int postion) {
         Notification.MediaStyle style = new Notification.MediaStyle();
 
+        Intent intent1 = new Intent(getApplicationContext(), ParentActivity.class);
+        intent1.putExtra("NotClick", true);
+        intent1.putExtra(Params.INTENT_PARAMS.INTENT_KEY_PROGRESS_MPLAYER,
+                mMediaPlayer != null ? mMediaPlayer.getCurrentPosition() : 0);
+        intent1.putExtra(Params.INTENT_PARAMS.INTENT_KEY_POSITION, postion);
+        PendingIntent mainIntent = PendingIntent.getActivity(getApplicationContext(), Params.NOTIFICATION_ID.FOREGROUND_SERVICE, intent1, 0);
         Intent intent = new Intent(getApplicationContext(), NotificationService.class);
         intent.setAction(Params.ACTIONS.ACTION_STOP);
         PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
         Notification.Builder builder = new Notification.Builder(this)
-                .setSmallIcon(R.drawable.moshaficon)
+                .setSmallIcon(R.drawable.homeblue)
+                .setContentIntent(mainIntent)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.moshaficon))
                 .setContentTitle(model.getTitle())
                 .setContentText(model.getReciter_name())
-                .setContentIntent(pendingIntent)
+                .setOngoing(true)
+                .setDeleteIntent(pendingIntent)
+                .setSubText("Tap to open Tv Quraan.")
                 .setStyle(style);
 
         builder.addAction(generateAction(android.R.drawable.ic_media_previous, "Previous", Params.ACTIONS.ACTION_PREVIOUS));
-        builder.addAction(generateAction(android.R.drawable.ic_media_rew, "Rewind", Params.ACTIONS.ACTION_REWIND));
         builder.addAction(action);
-        builder.addAction(generateAction(android.R.drawable.ic_media_ff, "Fast Foward", Params.ACTIONS.ACTION_FAST_FORWARD));
         builder.addAction(generateAction(android.R.drawable.ic_media_next, "Next", Params.ACTIONS.ACTION_NEXT));
-        style.setShowActionsInCompactView(0, 1, 2, 3, 4);
+        style.setShowActionsInCompactView(0, 1, 2);
 
         //NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -193,50 +220,56 @@ public class NotificationService extends Service implements MediaPlayer.OnComple
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void initMediaSessions(@NonNull final Entries model) {
-        mMediaPlayer = new MediaPlayer();
-
-        try {
-            Log.i(TAG, model.getSoundPath());
-            mMediaPlayer.setDataSource(model.getSoundPath());
-            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mMediaPlayer.setOnPreparedListener(this);
-            mMediaPlayer.prepare();
-            mMediaPlayer.setOnCompletionListener(this);
-
-        } catch (IOException | NullPointerException e) {
-            e.printStackTrace();
-        }
-
-
+    private void initMediaSessions() {
         mSession = new MediaSession(getApplicationContext(), "simple player session");
+        mSession.setActive(true);
         mController = new MediaController(getApplicationContext(), mSession.getSessionToken());
 
         mSession.setCallback(new MediaSession.Callback() {
                                  @Override
                                  public void onPlay() {
                                      super.onPlay();
-                                     Log.e(TAG, "onPlay");
+                                     Log.i(TAG, "onPlay");
+                                     try {
+                                         if (mMediaPlayer == null) {
+                                             initMediaPlayer(mList.get(postion));
+                                         }
+                                         mMediaPlayer.start();
+                                         Toast.makeText(getApplicationContext(), "" + mMediaPlayer.isPlaying(), Toast.LENGTH_SHORT).show();
+                                         buildNotification(generateAction(android.R.drawable.ic_media_pause, "Pause", Params.ACTIONS.ACTION_PAUSE), mList.get(postion), postion);
+                                     } catch (RuntimeException e) {
+                                         Log.e(TAG, "Exception ---> " + e.getMessage());
+                                         initMediaPlayer(mList.get(postion));
+                                         mMediaPlayer.start();
+                                         buildNotification(generateAction(android.R.drawable.ic_media_pause, "Pause", Params.ACTIONS.ACTION_PAUSE), mList.get(postion), postion);
+                                     }
                                      //mMediaPlayer.start();
-                                     mMediaPlayer.start();
-                                     buildNotification(generateAction(android.R.drawable.ic_media_pause, "Pause", Params.ACTIONS.ACTION_PAUSE), model);
                                  }
 
                                  @Override
                                  public void onPause() {
                                      super.onPause();
+                                     if (mMediaPlayer == null) onStop();
                                      Log.e(TAG, "onPause  -->" + mMediaPlayer.isPlaying());
-                                     if (mMediaPlayer.isPlaying()) {
-                                         mMediaPlayer.pause();
-                                     }
-                                     //Toast.makeText(getApplicationContext(), "" + mMediaPlayer.isPlaying(), Toast.LENGTH_SHORT).show();
-                                     buildNotification(generateAction(android.R.drawable.ic_media_play, "Play", Params.ACTIONS.ACTION_PLAY), model);
+                                     mMediaPlayer.pause();
+                                     Toast.makeText(getApplicationContext(), "" + mMediaPlayer.isPlaying(), Toast.LENGTH_SHORT).show();
+                                     buildNotification(generateAction(android.R.drawable.ic_media_play, "Play", Params.ACTIONS.ACTION_PLAY), mList.get(postion), postion);
                                  }
 
                                  @Override
                                  public void onSkipToNext() {
                                      super.onSkipToNext();
                                      Log.e(TAG, "onSkipToNext");
+                                     if (postion >= 0 && postion < mList.size() && postion != mList.size() - 1) {
+                                         postion += 1;
+                                     }
+                                     try {
+                                         mMediaPlayer.reset();
+                                         initMediaPlayer(mList.get(postion));
+                                         onPlay();
+                                     } catch (Exception e) {
+                                         Log.e(TAG, e.getMessage());
+                                     }
                                      //Change media here
                                      //buildNotification(generateAction(android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE),model);
                                  }
@@ -245,6 +278,18 @@ public class NotificationService extends Service implements MediaPlayer.OnComple
                                  public void onSkipToPrevious() {
                                      super.onSkipToPrevious();
                                      Log.e(TAG, "onSkipToPrevious");
+                                     if (postion > 0 && postion < mList.size() && postion != 0) {
+                                         postion -= 1;
+                                     }
+                                     try {
+                                         mMediaPlayer.reset();
+                                         initMediaPlayer(mList.get(postion));
+                                         mController.getTransportControls().play();
+                                     } catch (Exception e) {
+                                         Log.e(TAG, e.getMessage());
+                                     }
+
+
                                      //Change media here
                                      //buildNotification(generateAction(android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE),model);
                                  }
@@ -269,7 +314,20 @@ public class NotificationService extends Service implements MediaPlayer.OnComple
                                      super.onStop();
                                      Log.e(TAG, "onStop");
 
-                                     stopForeground(true);
+
+                                     try {
+                                         if (mMediaPlayer != null) {
+                                             mMediaPlayer.stop();
+                                             mMediaPlayer.release();
+                                         }
+                                         stopForeground(true);
+
+                                     } catch (IllegalStateException e) {
+                                         stopForeground(true);
+
+                                     }
+
+
                                      //Stop media player here
                                      /*mMediaPlayer.stop();
                                      mMediaPlayer.release();
@@ -293,13 +351,33 @@ public class NotificationService extends Service implements MediaPlayer.OnComple
         );
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void initMediaPlayer(Entries model) {
+        mMediaPlayer = new MediaPlayer();
+        try {
+            Log.i(TAG, model.getSoundPath());
+            mMediaPlayer.setDataSource(model.getSoundPath());
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mMediaPlayer.prepare();
+            mMediaPlayer.setOnPreparedListener(this);
+            mMediaPlayer.setOnCompletionListener(this);
+        } catch (IOException | NullPointerException e) {
+            Log.e(TAG, e.getMessage());
+        }
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onCompletion(MediaPlayer mp) {
+        //buildNotification(generateAction(android.R.drawable.ic_media_play, "Play", Params.ACTIONS.ACTION_PLAY), model);
+        mController.getTransportControls().rewind();
 
     }
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-
+        mp.seekTo(progress);
+        //mMediaPlayer.start();
     }
 }

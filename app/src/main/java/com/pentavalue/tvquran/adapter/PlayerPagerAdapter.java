@@ -81,7 +81,7 @@ public class PlayerPagerAdapter extends PagerAdapter {
             // Updating progress bar
             int progress = (int) (TimeUtilities.getProgressPercentage(currentDuration, totalDuration));
             //Log.d("Progress", ""+progress);
-            playerSeekBar.setProgress(progress);
+            //playerSeekBar.setProgress(progress);
 
             // Running this thread after 100 milliseconds
             mHandler.postDelayed(this, 100);
@@ -180,6 +180,7 @@ public class PlayerPagerAdapter extends PagerAdapter {
 
 
         });*/
+/*
         playerSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -188,7 +189,7 @@ public class PlayerPagerAdapter extends PagerAdapter {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                mHandler.removeCallbacks(mUpdateTimeTask);
+                //mHandler.removeCallbacks(mUpdateTimeTask);
 
             }
 
@@ -202,9 +203,10 @@ public class PlayerPagerAdapter extends PagerAdapter {
                 mp.seekTo(currentPosition);
 
                 // update timer progress again
-                updateSeekBar();
+                //updateSeekBar();
             }
         });
+*/
         ((ViewPager) container).addView(view, 0);
         return view;
     }

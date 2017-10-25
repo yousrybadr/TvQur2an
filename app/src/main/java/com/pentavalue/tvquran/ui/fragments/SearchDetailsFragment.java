@@ -44,15 +44,12 @@ import butterknife.ButterKnife;
  * Use the {@link SearchDetailsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SearchDetailsFragment extends BaseFragment implements OnBrawseCatogry ,OnAudioPlayListener {
+public class SearchDetailsFragment extends BaseFragment implements OnBrawseCatogry, OnAudioPlayListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-OnAudioPlayListener onAudioPlayListener;
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    OnAudioPlayListener onAudioPlayListener;
     Context context;
     @Bind(R.id.recyclerView)
     RecyclerView recyclerView;
@@ -62,6 +59,9 @@ OnAudioPlayListener onAudioPlayListener;
     Dialog dialog;
     int id;
     int category_id;
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
     private OnFragmentInteractionListener mListener;
 
     public SearchDetailsFragment() {
@@ -99,62 +99,51 @@ OnAudioPlayListener onAudioPlayListener;
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view= inflater.inflate(R.layout.fragment_search_details, container, false);
+        View view = inflater.inflate(R.layout.fragment_search_details, container, false);
         rightImg = ((ParentActivity) getActivity()).getRightImg();
         init(view);
-        onAudioPlayListener=this;
+        onAudioPlayListener = this;
         Bundle bundle = this.getArguments();
         if (bundle != null) {
-              category_id = bundle.getInt("category_id");
-            if (category_id== NetworkConstants.categories.HolyQr2an){
-                ((ParentActivity)getActivity()).setTitleTxt(getString(R.string.BeautifulQuranRecitation));
-            }
-
-          else  if (category_id== NetworkConstants.categories.DUA){
-                ((ParentActivity)getActivity()).setTitleTxt(getString(R.string.DUA));
-            }
-            else  if (category_id== NetworkConstants.categories.AdanAndTakbier){
-                ((ParentActivity)getActivity()).setTitleTxt(getString(R.string.AdanAndTakbier));
-            }
-            else  if (category_id== NetworkConstants.categories.DailyDhikr){
-                ((ParentActivity)getActivity()).setTitleTxt(getString(R.string.DailyDhikr));
-            }
-
-            else  if (category_id== NetworkConstants.categories.amazinQuraan){
-                ((ParentActivity)getActivity()).setTitleTxt(getString(R.string.amazinQuraan));
-            }
-            else  if (category_id== NetworkConstants.categories.VisitorsRecitations){
-                ((ParentActivity)getActivity()).setTitleTxt(getString(R.string.VisitorsRecitations));
-            }
-            else  if (category_id== NetworkConstants.categories.RareRecitations){
-                ((ParentActivity)getActivity()).setTitleTxt(getString(R.string.RareRecitations));
-            }
-            else  if (category_id== NetworkConstants.categories.Ruqyah){
-                ((ParentActivity)getActivity()).setTitleTxt(getString(R.string.Ruqyah));
-            }
-
-            else  if (category_id== NetworkConstants.categories.RecitationByChildren){
-                ((ParentActivity)getActivity()).setTitleTxt(getString(R.string.RecitationByChildren));
+            category_id = bundle.getInt("category_id");
+            if (category_id == NetworkConstants.categories.HolyQr2an) {
+                ((ParentActivity) getActivity()).setTitleTxt(getString(R.string.BeautifulQuranRecitation));
+            } else if (category_id == NetworkConstants.categories.DUA) {
+                ((ParentActivity) getActivity()).setTitleTxt(getString(R.string.DUA));
+            } else if (category_id == NetworkConstants.categories.AdanAndTakbier) {
+                ((ParentActivity) getActivity()).setTitleTxt(getString(R.string.AdanAndTakbier));
+            } else if (category_id == NetworkConstants.categories.DailyDhikr) {
+                ((ParentActivity) getActivity()).setTitleTxt(getString(R.string.DailyDhikr));
+            } else if (category_id == NetworkConstants.categories.amazinQuraan) {
+                ((ParentActivity) getActivity()).setTitleTxt(getString(R.string.amazinQuraan));
+            } else if (category_id == NetworkConstants.categories.VisitorsRecitations) {
+                ((ParentActivity) getActivity()).setTitleTxt(getString(R.string.VisitorsRecitations));
+            } else if (category_id == NetworkConstants.categories.RareRecitations) {
+                ((ParentActivity) getActivity()).setTitleTxt(getString(R.string.RareRecitations));
+            } else if (category_id == NetworkConstants.categories.Ruqyah) {
+                ((ParentActivity) getActivity()).setTitleTxt(getString(R.string.Ruqyah));
+            } else if (category_id == NetworkConstants.categories.RecitationByChildren) {
+                ((ParentActivity) getActivity()).setTitleTxt(getString(R.string.RecitationByChildren));
             }
 
 
-            ((ParentActivity)getActivity()).hideFilter(false);
+            ((ParentActivity) getActivity()).hideFilter(false);
 
-            context=getActivity();
-            performBrowes(category_id,1);
+            context = getActivity();
+            performBrowes(category_id, 1);
         }
 
-        return  view;
+        return view;
     }
 
-    private void performBrowes(int id ,int sort) {
+    private void performBrowes(int id, int sort) {
         showLoadingDialog();
-        RecitersMangers.getInstance(getActivity()).performBrowseCategoryDetails(id,sort);
+        RecitersMangers.getInstance(getActivity()).performBrowseCategoryDetails(id, sort);
 
     }
 
     private void init(View view) {
-        ButterKnife.bind(this,view);
+        ButterKnife.bind(this, view);
         //((ParentActivity)getActivity()).setTitleTxt(getString(R.string.discoverTitle));
         rightImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,14 +153,16 @@ OnAudioPlayListener onAudioPlayListener;
         });
 
     }
+
     private void setupRecyclerView(RecyclerView recyclerView, List<Entries> list) {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         setListItems(recyclerView, list);
 
     }
+
     private void setListItems(RecyclerView recyclerView, List<Entries> list) {
         if (!ValidatorUtils.isEmpty(list)) {
-            SortedSorahAdapter adapter = new SortedSorahAdapter(getActivity(), list,onAudioPlayListener);
+            SortedSorahAdapter adapter = new SortedSorahAdapter(getActivity(), list, onAudioPlayListener);
             recyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
         }
@@ -203,9 +194,9 @@ OnAudioPlayListener onAudioPlayListener;
 
     @Override
     public void onException(Exception exception) {
-        if (isAdded()){
+        if (isAdded()) {
             exception.printStackTrace();
-            Toast.makeText(getActivity(),getString(R.string.no_data),Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getString(R.string.no_data), Toast.LENGTH_SHORT).show();
             hideLoadingDialog();
         }
 
@@ -214,17 +205,15 @@ OnAudioPlayListener onAudioPlayListener;
     @Override
     public void onSuccess(Home entity) {
         hideLoadingDialog();
-        if (entity.getEntries().size() >0){
+        if (entity.getEntries().size() > 0) {
             sortedType.setText(entity.getSorted());
-            setupRecyclerView(recyclerView,entity.getEntries());
+            setupRecyclerView(recyclerView, entity.getEntries());
 
-        }
-        else
-        {
+        } else {
             sortedType.setVisibility(View.GONE);
             recyclerView.setVisibility(View.GONE);
             if (isAdded())
-            Toast.makeText(getActivity(),getString(R.string.no_data),Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.no_data), Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -236,7 +225,7 @@ OnAudioPlayListener onAudioPlayListener;
 
     @Override
     public void OnPlayTrack(int Postion, ArrayList<Entries> entries) {
-        ((ParentActivity)getActivity()).showPlayerAndPlaySound(entries,Postion);
+        ((ParentActivity) getActivity()).showPlayerAndPlaySound(entries, Postion, 1);
 
     }
 
@@ -245,16 +234,13 @@ OnAudioPlayListener onAudioPlayListener;
         super.onPause();
     }
 
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
     @Override
     public void onResume() {
         super.onResume();
         RecitersMangers.getInstance(getActivity()).addListener(this);
-       // ((ParentActivity)getActivity()).setTitleTxt("Home");
+        // ((ParentActivity)getActivity()).setTitleTxt("Home");
     }
+
     public void openDialog() {
 
         dialog = new Dialog(getActivity());
@@ -280,15 +266,15 @@ OnAudioPlayListener onAudioPlayListener;
                 }
 
                 dialog.hide();
-              performBrowes(category_id,id);
-                
+                performBrowes(category_id, id);
+
             }
         });
 
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (dialog.isShowing() && dialog!=null)
+                if (dialog.isShowing() && dialog != null)
                     dialog.dismiss();
             }
         });
@@ -298,5 +284,10 @@ OnAudioPlayListener onAudioPlayListener;
         dialog.show();
         // Toast.makeText(this,id+"",Toast.LENGTH_SHORT).show();
         //  return id;
+    }
+
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction(Uri uri);
     }
 }

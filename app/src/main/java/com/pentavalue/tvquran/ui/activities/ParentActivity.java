@@ -71,7 +71,8 @@ import java.util.ArrayList;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class ParentActivity extends BaseActivity implements View.OnClickListener,
+public class ParentActivity extends BaseActivity implements
+        View.OnClickListener,
         LiveBroadcastFragment.OnFragmentInteractionListener,
         LikeFragment.OnFragmentInteractionListener,
         DiscoverFragment.OnFragmentInteractionListener,
@@ -86,12 +87,12 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
 
     private static final String Tag = ParentActivity.class.getSimpleName();
     private static final String mediaTag = MediaPlayer.class.getSimpleName() + "_" + Tag;
-
     private static final int REQUEST_ACCESS_STORAGE = 112;
     public static ArrayList<Entries> mList = new ArrayList<>();
     public static ParentActivity activity;
     public static ProgressBar progress;
     public static boolean isConnected;
+    public FLAGS flags;
     public String suraURL, suraName_str, shikhName_str;
     public int duration, currentDuration;
     @Bind(R.id.leftImg)
@@ -229,8 +230,30 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
         this.leftImg = leftImg;
     }
 
-    @Override
+    private boolean checkPendingIntent() {
+        Intent intent = getIntent();
+        if (intent == null) return false;
 
+        if (intent.hasExtra("NotClick")) {
+            boolean isNotClick = intent.getBooleanExtra("NotClick", true);
+            if (isNotClick) {
+                checkConnection();
+                Intent stopIntent = new Intent(this, NotificationService.class);
+                stopIntent.setAction(Params.ACTIONS.ACTION_STOP);
+                stopIntent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_STOP, true);
+                startService(stopIntent);
+                //replaceFragment(LikeFragment.newInstance(), true, true);
+                return true;
+            } else {
+                return false;
+            }
+
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parent);
@@ -266,22 +289,31 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
         /*setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);*/
 //        playerOutLayout.setOnClickListener(this);
-        addIconToTaps();
-        //  setupPlayerExpandbleView();
+
         if (mp == null) {
             mp = new MediaPlayer();
-
         }
 
-        activity = this;
+        addIconToTaps();
+        setupSlidingPanelLayout();
 
+
+        activity = this;
         mHandler = new Handler();
         linearLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
         suraRV.setLayoutManager(linearLayoutManager);
         SnapHelper mSnapHelper = new PagerSnapHelper();
         mSnapHelper.attachToRecyclerView(suraRV);
 
-        setupSlidingPanelLayout();
+
+        if (checkPendingIntent()) {
+            ArrayList<Entries> history = HistoryTable.getInstance().GetHistoryList();
+            currentLenght = getIntent().getIntExtra(Params.INTENT_PARAMS.INTENT_KEY_PROGRESS_MPLAYER, 0);
+            showPlayerAndPlaySound(history, getIntent().hasExtra(Params.INTENT_PARAMS.INTENT_KEY_POSITION) ?
+                    getIntent().getIntExtra(Params.INTENT_PARAMS.INTENT_KEY_POSITION, -1) : 0, 0);
+            //slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+
+        }
 
 
         suraRV.setOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -341,8 +373,15 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
                     Log.i(Tag, "from panal>>>>" + position);
                 } else if (slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED) {
                     Log.i(Tag, "current collapsed>>" + currentLenght);
+
+                    if (mp != null && mp.isPlaying())
+                        playPauseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outpause));
+                    else
+                        playPauseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outplay));
+
                     if (position >= 0 && position <= mList.size()) {
                         updateSmallPlayer(mList.get(position));
+
                         playerSmallLayout.setVisibility(View.VISIBLE);
                     }
                 }
@@ -360,22 +399,7 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
     private void updateSmallPlayer(Entries entity) {
         if (entity != null) {
 
-            /*if (fromList) {
-                if (mp != null && mp.isPlaying()) {
-                    playPauseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outpause));
-                } else {
-                    playPauseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outplay));
 
-                }
-            } else {
-                if (mp != null && mp.isPlaying()) {
-                    playPauseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outpause));
-                } else {
-                    playPauseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outplay));
-
-                }
-            }
-*/
             txt_souraName.setText(entity.getTitle());
             txt_reciterName.setText(entity.getReciter_name());
         }
@@ -443,7 +467,6 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
 
     }
 
-
     private void addIconToTaps() {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -461,10 +484,13 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
                 if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
                     getSupportFragmentManager().popBackStackImmediate();
                 }
+
+
                 switch (position) {
                     case 0:
                         checkConnection();
                         replaceFragment(HomeFragment.newInstance(), false, true);
+
                         break;
                     case 1:
                         checkConnection();
@@ -508,7 +534,6 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
 
     }
 
-
     @Override
     public void onClick(View v) {
 
@@ -531,15 +556,15 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
         titleTxt.setText(title);
     }
 
-
-    //This part for play mp3
-
     @Override
     public void onFragmentInteraction(Uri uri) {
 
     }
 
-    public void showPlayerAndPlaySound(final ArrayList<Entries> dataList, int pos) {
+
+    //This part for play mp3
+
+    public void showPlayerAndPlaySound(final ArrayList<Entries> dataList, int pos, int flag) {
         //mList.clear();
         fromList = true;
         final Entries model = dataList.get(pos);
@@ -547,20 +572,27 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
         mList = dataList;
         position = pos;
         Log.i(mediaTag, "click  >> " + position);
-        currentLenght = 0;
         if (slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN) {
             // slidingLayout.setPanelHeight(60);
             slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         }
 
-        saveToHistory(dataList.get(pos));
+        /*  When Flag is 0 , this mean that pending Intent form Notification Service it had been started this activity
+        *
+        *   When Flag is 1, then this mean that Media Player will start from This Activity Not Service OK
+        */
+        if (flag == 0) {
+
+        } else {
+            saveToHistory(dataList.get(pos));
+            currentLenght = 0;
+        }
+
         suraRV.scrollToPosition(pos);
         playSound(suraURL, dataList.get(pos));
         playPauseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outpause));
-
         isSoundPlay = true;
-        txt_souraName.setText(dataList.get(pos).getTitle());
-        txt_reciterName.setText(dataList.get(pos).getReciter_name());
+        updateSmallPlayer(dataList.get(pos));
         playPauseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -572,19 +604,16 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
                 } else {
                     isSoundPlay = false;
                     playPauseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outplay));
-                    if (mp != null && mp.isPlaying())
+                    if (mp != null && mp.isPlaying()) {
                         currentLenght = mp.getCurrentPosition();
-                    //  mp.seekTo(currentLenght);
-                    mp.pause();
+                        mp.seekTo(currentLenght);
+                        mp.pause();
+                    }
+
                 }
 
             }
         });
-/*  if (suraViewPager.getAdapter()!=null)
-                {
-                    suraViewPager.getAdapter().notifyDataSetChanged();
-
-                }*/
     }
 
     public MediaPlayer getMediaPlayer() {
@@ -593,55 +622,26 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
 
     public void playSound(final String soundURL, Entries model) {
         Log.d(mediaTag, "from pager" + suraURL);
-        /*Intent intent = new Intent(getApplicationContext(), NotificationService.class);
-        intent.setAction(NotificationService.ACTION_PLAY);
-
-        intent.putExtra("Model", model);
-        startService(intent);*/
 
         if (mp != null && !mp.isPlaying()) {
 
             // try {
-
-
             if (currentLenght != 0) {
-                mp.seekTo(currentLenght);
+                mp.seekTo(mp.getCurrentPosition());
                 mp.start();
             } else if (currentLenght == 0) {
                 ApplicationController.getInstance().runInBackground(new Runnable() {
                     @Override
                     public void run() {
-                        mp.reset();
                         try {
+                            mp.reset();
                             mp.setDataSource(soundURL);
-                            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                @Override
-                                public void onPrepared(MediaPlayer mediaPlayer) {
-                                    if (currentLenght != 0)
-                                        mp.seekTo(currentLenght);
-                                    mediaPlayer.start();
-                                    duration = mp.getDuration();
-                                    currentDuration = mp.getCurrentPosition();
+                            mp.prepareAsync();
 
-                                    if (slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
-                                        View v = linearLayoutManager.findViewByPosition(position);
-                                        if (v != null) {
-                                            ImageView btnPlay = (ImageView) v.findViewById(R.id.img_play);
-                                            btnPlay.setBackgroundDrawable(getResources().getDrawable(R.drawable.playerpause));
-                                            SeekBar seekBar = (SeekBar) v.findViewById(R.id.seekbar);
-                                            //seekBar.setProgress(currentLenght);
-                                        }
-                                    }
-                                    Log.i(mediaTag, "duration=" + duration);
-                                    Log.i(mediaTag, "current=" + currentDuration);
-
-                                }
-                            });
                         } catch (IOException e) {
 
                             e.printStackTrace();
                         }
-                        mp.prepareAsync();
                     }
                 });
 
@@ -656,26 +656,7 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
                     try {
                         mp.reset();
                         mp.setDataSource(soundURL);
-                        mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                            @Override
-                            public void onPrepared(MediaPlayer mediaPlayer) {
-                                mediaPlayer.start();
-                                duration = mp.getDuration();
-                                if (slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
-                                    View v = linearLayoutManager.findViewByPosition(position);
-                                    if (v != null) {
-                                        ImageView btnPlay = (ImageView) v.findViewById(R.id.img_play);
-                                        btnPlay.setBackgroundDrawable(getResources().getDrawable(R.drawable.playerpause));
-                                        SeekBar seekBar = (SeekBar) v.findViewById(R.id.seekbar);
-                                        //seekBar.setProgress(currentLenght);
-                                    }
-                                }
-                                currentDuration = mp.getCurrentPosition();
-                                Log.i(mediaTag, "duration=" + duration);
-                                Log.i(mediaTag, "current=" + currentDuration);
 
-                            }
-                        });
                         mp.prepareAsync();
 
                     } catch (IOException e) {
@@ -684,6 +665,36 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
                 }
             });
         }
+
+        mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                mediaPlayer.start();
+
+                duration = mp.getDuration();
+                currentDuration = mp.getCurrentPosition();
+
+
+                if (slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                    if (mp.isPlaying()) {
+                        playPauseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outpause));
+                    }
+                } else if (slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                    View v = linearLayoutManager.findViewByPosition(position);
+                    if (v != null) {
+                        ImageView btnPlay = (ImageView) v.findViewById(R.id.img_play);
+                        btnPlay.setBackgroundDrawable(getResources().getDrawable(R.drawable.playerpause));
+                        SeekBar seekBar = (SeekBar) v.findViewById(R.id.seekbar);
+                        seekBar.setProgress(currentLenght);
+                        updateSeekBar(seekBar);
+                    }
+                }
+
+                Log.i(mediaTag, "duration=" + duration);
+                Log.i(mediaTag, "current=" + currentDuration);
+
+            }
+        });
 
         mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
@@ -711,22 +722,25 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
 
                 } else {
                     mp.setLooping(false);
-                    //  if (position< mList.size()){
-                      /*  Entries next=mList.get(position);
-                    playSound(next.getSoundPath());*/
                     Log.v(Tag, "onComplete From Parent Activity");
                     if (slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
                         currentLenght = 0;
                         suraRV.getLayoutManager().scrollToPosition(position + 1);
                         //jumpToNext(null);
                     }
-                    //suraViewPager.setCurrentItem(position + 1, true);
-                    //  }
+
                 }
-                //   mp.seekTo(0);
+                if (isRepeat()) {
+                    playSound(mList.get(position).getSoundPath(), mList.get(position));
+                }
+                jumpToNext(null);
+                Toast.makeText(getApplicationContext(), "Sura " + mList.get(position).getTitle() + " is finished", Toast.LENGTH_SHORT).show();
+
+                mp.seekTo(0);
 
             }
         });
+
 
     }
 
@@ -914,6 +928,7 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
         if (isRepeat) {
             isRepeat = false;
             mp.setLooping(false);
+
             Toast.makeText(getApplicationContext(), "is repeat false", Toast.LENGTH_SHORT).show();
         } else {
             isRepeat = true;
@@ -1072,13 +1087,14 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
             {
                 //  View v = linearLayoutManager.findViewByPosition(position);
                 if (v != null) {
-                    SeekBar seekBar = (SeekBar) v.findViewById(R.id.seekbar);
-                    seekBar.setProgress(currentLenght);
+                    //SeekBar seekBar = (SeekBar) v.findViewById(R.id.seekbar);
+                    //seekBar.setProgress(currentLenght);
                     ImageView btnPlay = (ImageView) v.findViewById(R.id.img_play);
                     btnPlay.setBackgroundDrawable(getResources().getDrawable(R.drawable.playerpause));
                     playSound(mList.get(position).getSoundPath(), mList.get(position));
+                    isSoundPlay = true;
 
-                    //updateSeekBar();
+                    //updateSeekBar(seekBar);
                 }
             }
 
@@ -1086,9 +1102,11 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
             if (mp != null && mp.isPlaying()) {
                 currentLenght = mp.getCurrentPosition();
                 if (v != null) {
-                    SeekBar seekBar = (SeekBar) v.findViewById(R.id.seekbar);
-                    seekBar.setProgress(currentLenght);
+                    //SeekBar seekBar = (SeekBar) v.findViewById(R.id.seekbar);
+                    //seekBar.setProgress(currentLenght);
                     ImageView btnPlay = (ImageView) v.findViewById(R.id.img_play);
+
+                    isSoundPlay = false;
                     btnPlay.setBackgroundDrawable(getResources().getDrawable(R.drawable.playerplay));
                 }
                 mp.pause();
@@ -1097,8 +1115,28 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
 
     }
 
-    private void updateSeekBar() {
+    public void updateSeekBar(SeekBar seekBar) {
 
+        seekBar.setMax(getDuration());
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    mp.seekTo(progress);
+                    seekBar.setProgress(progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
         ApplicationController.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
@@ -1113,6 +1151,7 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
         super.onStart();
         Intent stopIntent = new Intent(this, NotificationService.class);
         stopIntent.setAction(Params.ACTIONS.ACTION_STOP);
+        stopIntent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_STOP, true);
         startService(stopIntent);
         if (mp != null) {
             mp.start();
@@ -1141,13 +1180,14 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
                 int progress = mp.getCurrentPosition() / 1000;
                 Intent intent = new Intent(getApplicationContext(), NotificationService.class);
                 intent.setAction(Params.ACTIONS.ACTION_PLAY);
+                intent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_STOP, false);
                 intent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_PROGRESS, progress);
                 intent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_POSITION, position);
                 intent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_MODEL, mList.get(position));
                 if (position >= 0 && position < mList.size())
                     startService(intent);
 
-                ApplicationController.getInstance().shutDownExecuterService();
+                //ApplicationController.getInstance().shutDownExecuterService();
 
                 mp.stop();
 
@@ -1162,31 +1202,54 @@ public class ParentActivity extends BaseActivity implements View.OnClickListener
     protected void onStop() {
         super.onStop();
 
-        if (mp != null && mp.isPlaying()) {
-            mp.stop();
+        startNotificationService();
 
-        }
-        ApplicationController.getInstance().shutDownExecuterService();
+
+        //ApplicationController.getInstance().shutDownExecuterService();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Intent stopIntent = new Intent(this, NotificationService.class);
-        stopIntent.setAction(Params.ACTIONS.STOPFOREGROUND_ACTION);
-        startService(stopIntent);
+        startNotificationService();
         // ButterKnife.unbind(this);
         unregisterReceiver(receiver);
         unregisterReceiver(FailReciver);
         unregisterReceiver(downloadProgressReciver);
    /*     LocalBroadcastManager.getInstance(this).unregisterReceiver(
                 downloadProgressReciver);*/
-        if (mp != null && mp.isPlaying()) {
-            mp.stop();
-            mp.release();
 
-        }
 
     }
+
+    void startNotificationService() {
+        try {
+            if (mp != null && mp.isPlaying()) {
+                int progress = mp.getCurrentPosition() / 1000;
+                Intent intent = new Intent(getApplicationContext(), NotificationService.class);
+                intent.setAction(Params.ACTIONS.ACTION_PLAY);
+                intent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_STOP, false);
+                intent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_PROGRESS, progress);
+                intent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_POSITION, position);
+                intent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_MODEL, mList.get(position));
+                if (position >= 0 && position < mList.size())
+                    startService(intent);
+
+                //ApplicationController.getInstance().shutDownExecuterService();
+
+                mp.stop();
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    enum FLAGS {
+        FLAG_NOTIFICATION_PLAYER,
+        FLAG_APPLICATION_PLAYER
+    }
+
 
 }

@@ -16,6 +16,11 @@ public abstract class Params {
         public static final String INTENT_KEY_PROGRESS = "intent_key_progress";
         public static final String INTENT_KEY_MODEL = "intent_key_model";
         public static final String INTENT_KEY_POSITION = "intent_key_position";
+        public static final String INTENT_KEY_STOP = "intent_key_stopped";
+        public static final String INTENT_KEY_PROGRESS_MPLAYER = "intent_key_stopped";
+        //public static final String INTENT_KEY_ = "intent_key_stopped";
+
+
 
 
         /*public static final String INTENT_KEY_ = "";

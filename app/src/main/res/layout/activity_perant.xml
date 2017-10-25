@@ -83,7 +83,9 @@
 
     <include
         android:id="@+id/playerLayout"
-        layout="@layout/fragment_player_view_pager"></include>
+        layout="@layout/fragment_player_view_pager">
+
+    </include>
 
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 
