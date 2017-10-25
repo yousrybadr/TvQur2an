@@ -230,19 +230,25 @@ public class ParentActivity extends BaseActivity implements
         this.leftImg = leftImg;
     }
 
-    private boolean checkPendingIntent() {
+    private void stopMediaService() {
+        checkConnection();
+        Intent stopIntent = new Intent(this, NotificationService.class);
+        stopIntent.setAction(Params.ACTIONS.ACTION_STOP);
+        stopIntent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_STOP, true);
+        startService(stopIntent);
+        //replaceFragment(LikeFragment.newInstance(), true, true);
+    }
+
+    private boolean checkPendingIntent(int flag) {
         Intent intent = getIntent();
         if (intent == null) return false;
 
         if (intent.hasExtra("NotClick")) {
             boolean isNotClick = intent.getBooleanExtra("NotClick", true);
             if (isNotClick) {
-                checkConnection();
-                Intent stopIntent = new Intent(this, NotificationService.class);
-                stopIntent.setAction(Params.ACTIONS.ACTION_STOP);
-                stopIntent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_STOP, true);
-                startService(stopIntent);
-                //replaceFragment(LikeFragment.newInstance(), true, true);
+                if (flag == 1) {
+                    stopMediaService();
+                }
                 return true;
             } else {
                 return false;
@@ -306,13 +312,17 @@ public class ParentActivity extends BaseActivity implements
         mSnapHelper.attachToRecyclerView(suraRV);
 
 
-        if (checkPendingIntent()) {
+        if (checkPendingIntent(1)) {
             ArrayList<Entries> history = HistoryTable.getInstance().GetHistoryList();
             currentLenght = getIntent().getIntExtra(Params.INTENT_PARAMS.INTENT_KEY_PROGRESS_MPLAYER, 0);
+            Log.e(NotificationService.class.getSimpleName(), "Current Length is --> " + currentLenght);
+            if (NotificationService.progress >= 0) {
+                currentLenght = NotificationService.progress;
+                Log.e(NotificationService.class.getSimpleName(), "Current Length is --> " + NotificationService.progress);
+                NotificationService.progress = 0;
+            }
             showPlayerAndPlaySound(history, getIntent().hasExtra(Params.INTENT_PARAMS.INTENT_KEY_POSITION) ?
                     getIntent().getIntExtra(Params.INTENT_PARAMS.INTENT_KEY_POSITION, -1) : 0, 0);
-            //slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-
         }
 
 
@@ -627,8 +637,20 @@ public class ParentActivity extends BaseActivity implements
 
             // try {
             if (currentLenght != 0) {
-                mp.seekTo(mp.getCurrentPosition());
-                mp.start();
+                try {
+                    if (checkPendingIntent(0)) {
+                        mp.reset();
+                        mp.setDataSource(soundURL);
+                        mp.prepareAsync();
+
+                    } else {
+                        mp.seekTo(currentLenght);
+                        mp.start();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
             } else if (currentLenght == 0) {
                 ApplicationController.getInstance().runInBackground(new Runnable() {
                     @Override
@@ -669,6 +691,9 @@ public class ParentActivity extends BaseActivity implements
         mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
+                if (checkPendingIntent(0)) {
+                    mp.seekTo(currentLenght);
+                }
                 mediaPlayer.start();
 
                 duration = mp.getDuration();
@@ -1124,6 +1149,7 @@ public class ParentActivity extends BaseActivity implements
                 if (fromUser) {
                     mp.seekTo(progress);
                     seekBar.setProgress(progress);
+                    currentLenght = progress;
                 }
             }
 
@@ -1173,28 +1199,8 @@ public class ParentActivity extends BaseActivity implements
     @Override
     protected void onPause() {
         super.onPause();
+        startNotificationService();
 
-
-        try {
-            if (mp != null && mp.isPlaying()) {
-                int progress = mp.getCurrentPosition() / 1000;
-                Intent intent = new Intent(getApplicationContext(), NotificationService.class);
-                intent.setAction(Params.ACTIONS.ACTION_PLAY);
-                intent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_STOP, false);
-                intent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_PROGRESS, progress);
-                intent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_POSITION, position);
-                intent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_MODEL, mList.get(position));
-                if (position >= 0 && position < mList.size())
-                    startService(intent);
-
-                //ApplicationController.getInstance().shutDownExecuterService();
-
-                mp.stop();
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
     }
 
@@ -1204,6 +1210,7 @@ public class ParentActivity extends BaseActivity implements
 
         startNotificationService();
 
+        mp.pause();
 
         //ApplicationController.getInstance().shutDownExecuterService();
     }
@@ -1225,11 +1232,13 @@ public class ParentActivity extends BaseActivity implements
     void startNotificationService() {
         try {
             if (mp != null && mp.isPlaying()) {
-                int progress = mp.getCurrentPosition() / 1000;
+                int progress = mp.getCurrentPosition();
                 Intent intent = new Intent(getApplicationContext(), NotificationService.class);
                 intent.setAction(Params.ACTIONS.ACTION_PLAY);
                 intent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_STOP, false);
                 intent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_PROGRESS, progress);
+                Log.i(BaseActivity.class.getSimpleName(), "Current Length in start Notification is " + currentLenght + "\nThe Progress is " + progress);
+
                 intent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_POSITION, position);
                 intent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_MODEL, mList.get(position));
                 if (position >= 0 && position < mList.size())
@@ -1237,7 +1246,7 @@ public class ParentActivity extends BaseActivity implements
 
                 //ApplicationController.getInstance().shutDownExecuterService();
 
-                mp.stop();
+                mp.pause();
 
             }
         } catch (Exception e) {

@@ -142,6 +142,7 @@ public class HistoryTable extends AbstractTable {
         return GModel;
     }
 
+
     public ArrayList<Entries> GetHistoryList() {
         Cursor cursor = DatabaseManager.getInstance().getWritableDatabase().query(getTableName(), getProjection(), " is_History=1", null, null, null, _ID + " DESC");
         ArrayList<Entries> mList = new ArrayList<>();
