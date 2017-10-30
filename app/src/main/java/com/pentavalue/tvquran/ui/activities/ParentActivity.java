@@ -699,7 +699,6 @@ public class ParentActivity extends BaseActivity implements
                 duration = mp.getDuration();
                 currentDuration = mp.getCurrentPosition();
 
-
                 if (slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED) {
                     if (mp.isPlaying()) {
                         playPauseBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.player_outpause));
@@ -977,7 +976,11 @@ public class ParentActivity extends BaseActivity implements
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                dialog.dismiss();
+                try {
+                    dialog.dismiss();
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                }
                 showDoneDialog();
                 final AlertDialog.Builder dialogAlert = new AlertDialog.Builder(activity);//, R.style.AppThemeNoActionBar
                 dialogAlert.setTitle(getString(R.string.downLoadTitle));

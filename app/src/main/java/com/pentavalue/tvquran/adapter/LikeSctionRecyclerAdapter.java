@@ -20,6 +20,7 @@ import com.pentavalue.tvquran.recivers.DownloadReceiver;
 import com.pentavalue.tvquran.service.DownloadService;
 import com.pentavalue.tvquran.ui.activities.ParentActivity;
 import com.pentavalue.tvquran.ui.fragments.DisplayCompleteListFragment;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -34,8 +35,10 @@ public class LikeSctionRecyclerAdapter extends SectionRecyclerViewAdapter<Header
         LikeSctionRecyclerAdapter.SectionViewHolder, LikeSctionRecyclerAdapter.ChildViewHolder> {
 
 
+
     Context context;
     List<HeaderModel> sectionItemList;
+    android.os.Handler handler;
 
     public LikeSctionRecyclerAdapter(Context context, List<HeaderModel> sectionItemList) {
         super(context, sectionItemList);
@@ -72,18 +75,30 @@ public class LikeSctionRecyclerAdapter extends SectionRecyclerViewAdapter<Header
     @Override
     public void onBindChildViewHolder(final ChildViewHolder childViewHolder, final int sectionPosition, final int childPosition, Entries entries) {
         childViewHolder.rectirsName.setText(entries.getReciter_name());
-       /* Picasso.with(context)
-                .load(entity.getReciter_photo())
-                .placeholder(R.drawable.emosad)
-                .error(R.drawable.emosad)
-                .into(holder.profile_image);*/
+
+
+        final Runnable mUpdateDownloadProgressBar = new Runnable() {
+            @Override
+            public void run() {
+                if (DownloadService.isDownloading && DownloadReceiver.Down_progress < 100) {
+                    Log.i("BOB", "" + DownloadReceiver.Down_progress);
+                    childViewHolder.downloadprogress.setProgress(DownloadReceiver.Down_progress);
+                    notifyDataSetChanged();
+                    handler.post(this);
+                } else {
+                    childViewHolder.downloadprogress.setVisibility(View.GONE);
+                }
+            }
+        };
+        handler = new android.os.Handler();
         childViewHolder.sorahName.setText(entries.getTitle());
         childViewHolder.sorahDesc.setText(entries.getCategory_desc());
         childViewHolder.numOfLikes.setText(entries.getUpVotes() + "");
         childViewHolder.numOfListen.setText(entries.getViews_count() + "");
+        Picasso.with(context).load(entries.getReciter_photo()).placeholder(R.drawable.emosad)
+                .error(R.drawable.emosad).into(childViewHolder.profile_image);
         if (sectionPosition == 0) {
             childViewHolder.downloadprogress.setVisibility(View.GONE);
-
         } else if (sectionPosition == 1) {
             if (DownloadService.isDownloading) {
                 if (childPosition == 0) {
@@ -92,9 +107,7 @@ public class LikeSctionRecyclerAdapter extends SectionRecyclerViewAdapter<Header
                     ApplicationController.getInstance().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Log.i("BOB", "" + DownloadReceiver.Down_progress);
-                            childViewHolder.downloadprogress.setProgress(DownloadReceiver.Down_progress);
-                            notifyDataSetChanged();
+                            handler.post(mUpdateDownloadProgressBar);
                         }
                     });
                 } else {
@@ -109,6 +122,7 @@ public class LikeSctionRecyclerAdapter extends SectionRecyclerViewAdapter<Header
         childViewHolder.itemLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 // Toast.makeText(context,"click on position "+childPosition,Toast.LENGTH_SHORT).show();
                 if (sectionItemList.get(sectionPosition).getTempdList().get(childPosition).getSoundPath() != null ||
                         !sectionItemList.get(sectionPosition).getTempdList().get(childPosition).getSoundPath().equals(""))

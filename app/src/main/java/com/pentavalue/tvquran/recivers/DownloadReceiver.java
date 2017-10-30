@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.ResultReceiver;
 import android.util.Log;
 
+import com.pentavalue.tvquran.service.DownloadService;
 import com.pentavalue.tvquran.utils.Config;
 
 /**
@@ -26,9 +27,9 @@ public class DownloadReceiver extends ResultReceiver {
             Log.i("ZOZO","prog>>"+progress);
 
             Down_progress=progress;
-//            if (DownloadService.isDownloading && progress==100){
-//                DownloadService.isDownloading=false;
-//            }
+            if (DownloadService.isDownloading && progress == 100) {
+                DownloadService.isDownloading = false;
+            }
            // mProgressDialog.setProgress(progress);
 
         }
