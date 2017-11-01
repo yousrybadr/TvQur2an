@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -92,8 +93,7 @@ public class ParentActivity extends BaseActivity implements
     public static ParentActivity activity;
     public static ProgressBar progress;
     public static boolean isConnected;
-    public FLAGS flags;
-    public String suraURL, suraName_str, shikhName_str;
+    public String suraURL;
     public int duration, currentDuration;
     @Bind(R.id.leftImg)
     ImageView leftImg;
@@ -119,12 +119,8 @@ public class ParentActivity extends BaseActivity implements
     SlidingUpPanelLayout slidingLayout;
     @Bind(R.id.smallPlayerLayout)
     RelativeLayout playerSmallLayout;
-    /*   @Bind(R.id.pager)
-       ViewPager suraViewPager;*/
     @Bind(R.id.suraRV)
     RecyclerView suraRV;
-    /* @Bind(R.id.loading_gif)
-     GifImageView preLoadingGif;*/
     @Bind(R.id.connectionTxt)
     TextView connectionText;
     @Bind(R.id.txtGo_online)
@@ -133,7 +129,7 @@ public class ParentActivity extends BaseActivity implements
     ImageView img_connection;
     @Bind(R.id.moreTopLayout)
     LinearLayout noConnection;
-    boolean isPlayerShown = false;
+
     boolean isSoundPlay = false;
     MediaPlayer mp;
     Entries model;
@@ -146,11 +142,8 @@ public class ParentActivity extends BaseActivity implements
     int currentLenght = 0;
     boolean fromList = false;
     LinearLayoutManager linearLayoutManager;
-    //Tracker mTracker;
     Handler mHandler;
-    /*
-        @Bind(R.id.viewpager)
-        CustomViewPager viewPager;*/
+
     int id = 0;
     int[] tapImage =
             {
@@ -159,14 +152,7 @@ public class ParentActivity extends BaseActivity implements
                     R.drawable.favorite_tab,
                     R.drawable.setting_tab
             };
-    /* int[] tapImageSelected =
-             {
-                     R.drawable.homeblue,
-                     R.drawable.searchblue,
-                     R.drawable.likeblue,
-                     R.drawable.catblue
-             };*/
-    Dialog dialog;
+
     private Runnable mUpdateTimeTask = new Runnable() {
         @Override
         public void run() {
@@ -179,7 +165,6 @@ public class ParentActivity extends BaseActivity implements
                 // Displaying time completed playing
                 TextView txtDuration = (TextView) v.findViewById(R.id.txt_duration);
                 txtDuration.setText("" + TimeUtilities.milliSecondsToTimer(mp.getCurrentPosition()));
-                //   Log.i("LOLO",""+TimeUtilities.milliSecondsToTimer(currentDuration));
                 // Updating progress bar
                 int progress = (int) (TimeUtilities.getProgressPercentage(currentDuration, totalDuration));
                 //Log.d("Progress", ""+progress);
@@ -948,15 +933,18 @@ public class ParentActivity extends BaseActivity implements
     }
 
     public void autoReplay(View view) {
+        ImageButton imageButton = (ImageButton) view;
 
         if (isRepeat) {
             isRepeat = false;
             mp.setLooping(false);
-
+            //autoPlayView.setImageDrawable();
+            imageButton.setImageDrawable(getResources().getDrawable(R.drawable.player_outreply));
             Toast.makeText(getApplicationContext(), "is repeat false", Toast.LENGTH_SHORT).show();
         } else {
             isRepeat = true;
             mp.setLooping(true);
+            imageButton.setImageDrawable(getResources().getDrawable(R.drawable.player_outreply_haver));
             Toast.makeText(getApplicationContext(), "is repeat true", Toast.LENGTH_SHORT).show();
 
         }
@@ -1178,13 +1166,16 @@ public class ParentActivity extends BaseActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-        Intent stopIntent = new Intent(this, NotificationService.class);
-        stopIntent.setAction(Params.ACTIONS.ACTION_STOP);
-        stopIntent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_STOP, true);
-        startService(stopIntent);
-        if (mp != null) {
-            mp.start();
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Intent stopIntent = new Intent(this, NotificationService.class);
+            stopIntent.setAction(Params.ACTIONS.ACTION_STOP);
+            stopIntent.putExtra(Params.INTENT_PARAMS.INTENT_KEY_STOP, true);
+            startService(stopIntent);
+            if (mp != null) {
+                mp.start();
+            }
         }
+
     }
 
     @Override
@@ -1202,7 +1193,10 @@ public class ParentActivity extends BaseActivity implements
     @Override
     protected void onPause() {
         super.onPause();
-        startNotificationService();
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            startNotificationService();
+
+        }
 
 
     }
@@ -1211,8 +1205,10 @@ public class ParentActivity extends BaseActivity implements
     protected void onStop() {
         super.onStop();
 
-        startNotificationService();
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            startNotificationService();
 
+        }
         mp.pause();
 
         //ApplicationController.getInstance().shutDownExecuterService();
@@ -1221,8 +1217,10 @@ public class ParentActivity extends BaseActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        startNotificationService();
-        // ButterKnife.unbind(this);
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            startNotificationService();
+
+        }        // ButterKnife.unbind(this);
         unregisterReceiver(receiver);
         unregisterReceiver(FailReciver);
         unregisterReceiver(downloadProgressReciver);

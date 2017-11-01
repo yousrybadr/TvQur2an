@@ -16,7 +16,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.pentavalue.tvquran.R;
-import com.pentavalue.tvquran.application.ApplicationController;
 import com.pentavalue.tvquran.datasorage.database.HistoryTable;
 import com.pentavalue.tvquran.model.Entries;
 import com.pentavalue.tvquran.ui.activities.ParentActivity;
@@ -125,43 +124,6 @@ public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAd
         } catch (RuntimeException e) {
             e.printStackTrace();
         }
-/*
-
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                if (((ParentActivity) mContext).isRepeat()) {
-                    ((ParentActivity) mContext).playSound(mList.get(position).getSoundPath(), mList.get(position));
-                }
-                ((ParentActivity) mContext).jumpToNext(null);
-                Toast.makeText(mContext, "Sura " + mList.get(position).getTitle() + " is finished", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        holder.txtDuration.setText();
-
-        updateSeekBar(holder, totalDuration);
-
-        ((ParentActivity)mContext).getMediaPlayer().setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-
-                updateSeekBar(holder, totalDuration);
-            }
-        });
-
-
-*/
-        //holder.playerSeekBar.setClickable(false);
-        //holder.playerSeekBar.setMax((int) totalDuration);
-        //holder.playerSeekBar.setProgress((int) currentDuration);
-        /*if (mp != null && mp.isPlaying()) {
-            //holder.playerSeekBar.setProgress((int) currentDuration);
-
-
-        }*/
-        //updateSeekBar(holder, totalDuration);
-
 
     }
 
@@ -170,37 +132,6 @@ public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAd
         return mList.size();
     }
 
-    private void updateSeekBar(final DataViewHolder holder, int duration) {
-
-        holder.playerSeekBar.setMax(duration);
-        holder.playerSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser) {
-                    mp.seekTo(progress);
-                    seekBar.setProgress(progress);
-                }
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-        ApplicationController.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                mHandler.postDelayed(mUpdateTimeTask, 100);
-            }
-        });
-
-    }
 
     public class DataViewHolder extends RecyclerView.ViewHolder {
 
